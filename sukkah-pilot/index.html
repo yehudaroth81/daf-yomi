@@ -1,0 +1,997 @@
+<!doctype html><html><head><meta name="robots" content="noindex,nofollow"><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>סוכה בריצה</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Frank+Ruhl+Libre:wght@400;500;700&family=Noto+Rashi+Hebrew:wght@500;600&display=swap">
+<style>
+/* Layout: sticky control bar; slide = text column (Gemara + explanation) beside the logic flow; bottom line closes each slide. */
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --ink:#18202E; --muted:#5A6375; --line:#DCE1E8; --accent:#24477A; --accent-ink:#FFFFFF;
+  --t-verse:#8A5A2B; --t-drasha:#0E7A84; --t-scene:#9C4F86; --sch:#3E8A3A; --sky:#E9F1F8;
+  --t-source:#5E6B80; --t-question:#A06400; --t-kushya:#BF3A2B; --t-proof:#2563A8; --t-answer:#23804F; --t-rejection:#BF560D; --t-conclusion:#6D44A8;
+  --f-text:"Frank Ruhl Libre","David Libre","Times New Roman",serif;
+  --f-ui:"Assistant","Segoe UI",Arial,sans-serif;
+  --f-rashi:"Noto Rashi Hebrew","Frank Ruhl Libre",serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F131A; --surface:#171C25; --ink:#E6EAF0; --muted:#9AA3B2; --line:#2A313D; --accent:#8FB2E8; --accent-ink:#0F131A;
+  --t-source:#A4AFC2; --t-question:#E3A93B; --t-kushya:#F07A6C; --t-proof:#73A8EE; --t-answer:#5BC48A; --t-rejection:#F2955A; --t-conclusion:#B595EC;
+  --t-verse:#D6A774; --t-drasha:#58C6CF; --t-scene:#DA8FC6; --sch:#6CC067; --sky:#162232;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F131A; --surface:#171C25; --ink:#E6EAF0; --muted:#9AA3B2; --line:#2A313D; --accent:#8FB2E8; --accent-ink:#0F131A;
+  --t-source:#A4AFC2; --t-question:#E3A93B; --t-kushya:#F07A6C; --t-proof:#73A8EE; --t-answer:#5BC48A; --t-rejection:#F2955A; --t-conclusion:#B595EC;
+  --t-verse:#D6A774; --t-drasha:#58C6CF; --t-scene:#DA8FC6; --sch:#6CC067; --sky:#162232;
+  color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-ui);font-size:16px;line-height:1.55;direction:rtl}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding-block:10px}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand b{font-family:var(--f-text);font-size:1.25rem;font-weight:700}
+.brand span{font-family:var(--f-rashi);color:var(--muted);font-size:.9rem}
+.progress{display:flex;gap:4px;flex:1 1 220px;min-width:0}
+.progress button{flex:1;height:8px;border:0;border-radius:4px;background:var(--line);cursor:pointer;padding:0}
+.progress button.done{background:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.progress button.cur{background:var(--accent)}
+.progress button.ok{box-shadow:0 0 0 2px color-mix(in srgb,var(--t-answer) 70%,transparent) inset}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.timer{font-variant-numeric:tabular-nums;font-weight:600;color:var(--muted);min-width:4.5em;text-align:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:transparent;padding:5px 11px;cursor:pointer;font-size:.9rem}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.chip-btn{border:1px solid var(--line);background:transparent;border-radius:8px;padding:5px 11px;cursor:pointer;font-size:.9rem}
+.chip-btn[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);font-weight:600}
+
+/* slide head */
+main{padding-block:22px 120px}
+.eyebrow{font-family:var(--f-rashi);color:var(--muted);font-size:.92rem;letter-spacing:.02em}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 24px;align-items:flex-end;margin-bottom:18px}
+.head h1{font-family:var(--f-text);font-size:clamp(1.55rem,3.2vw,2.2rem);line-height:1.25;margin:4px 0 8px;text-wrap:balance;font-weight:700}
+.speakers{display:flex;flex-wrap:wrap;gap:6px}
+.spk{font-size:.85rem;border:1px solid var(--line);border-radius:999px;padding:2px 10px;background:var(--surface)}
+.spk small{color:var(--muted);margin-inline-start:4px}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap}
+.head-actions a{color:var(--accent);font-size:.9rem;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:5px 11px}
+.head-actions a:hover{border-color:var(--accent)}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:.9rem;color:var(--t-question);background:color-mix(in srgb,var(--t-question) 10%,transparent);border-radius:8px;padding:8px 12px;margin-bottom:16px}
+
+/* columns */
+.cols{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.cols{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;min-width:0}
+.panel-title{font-size:.78rem;font-weight:700;color:var(--muted);letter-spacing:.06em;margin:0 0 10px}
+
+.gemara{display:grid;gap:14px}
+.seg-row{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:baseline}
+.ref{font-family:var(--f-rashi);font-size:.75rem;color:var(--muted);white-space:nowrap}
+.gtext{font-family:var(--f-text);font-size:1.32rem;line-height:2.05;margin:0}
+.gtext [data-n]{--c:var(--muted);background:color-mix(in srgb,var(--c) 15%,transparent);box-shadow:inset 0 -2px 0 color-mix(in srgb,var(--c) 70%,transparent);border-radius:3px;padding:1px 2px;cursor:pointer;transition:opacity .15s,background .15s}
+.gtext [data-n].hidden-step{background:transparent;box-shadow:none;cursor:default}
+.has-active .gtext [data-n]:not(.on){opacity:.38}
+.has-active .gtext [data-n].on{background:color-mix(in srgb,var(--c) 28%,transparent)}
+
+.explain{margin-top:18px;padding-top:16px;border-top:1px dashed var(--line);display:grid;gap:10px}
+.explain p{margin:0;max-width:68ch;font-size:1.02rem;padding-inline-start:12px;border-inline-start:2px solid transparent;transition:opacity .15s}
+.explain p b{font-family:var(--f-text);font-weight:700;font-size:1.06em}
+.explain p.on{border-inline-start-color:var(--c)}
+.has-active .explain p:not(.on){opacity:.45}
+
+/* flow */
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin-bottom:12px;font-size:.78rem;color:var(--muted)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--c);margin-inline-end:5px;vertical-align:middle}
+.flow{display:grid;gap:10px}
+.node{--c:var(--muted);position:relative;border:1px solid color-mix(in srgb,var(--c) 40%,var(--line));background:color-mix(in srgb,var(--c) 6%,var(--surface));border-radius:10px;padding:10px 12px;cursor:pointer;margin-inline-start:calc(var(--d,0) * 22px);transition:opacity .2s,transform .2s,box-shadow .15s}
+.node[data-d]:not([data-d="0"])::before{content:"";position:absolute;inset-inline-start:-14px;top:-11px;width:12px;height:30px;border-inline-start:2px solid var(--line);border-bottom:2px solid var(--line);border-end-start-radius:8px}
+.node .top{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;margin-bottom:3px}
+.pill{font-size:.74rem;font-weight:700;color:var(--c);border:1px solid color-mix(in srgb,var(--c) 55%,transparent);border-radius:999px;padding:0 8px}
+.who{font-size:.8rem;color:var(--muted);font-weight:600}
+.onto{font-size:.74rem;color:var(--muted);margin-inline-start:auto}
+.node .txt{font-size:.98rem}
+.node.on{box-shadow:0 0 0 2px var(--c)}
+.has-active .node:not(.on){opacity:.5}
+.node.pending{opacity:.0;transform:translateY(4px);pointer-events:none;height:0;padding:0;border:0;margin:0;overflow:hidden}
+.node.pending::before{display:none}
+@media (prefers-reduced-motion:reduce){.node,.gtext [data-n],.explain p{transition:none}}
+
+.widget{margin-top:16px;border-top:1px dashed var(--line);padding-top:14px}
+.widget h3{font-size:.95rem;margin:0 0 8px}
+.wtabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:center}
+th{color:var(--muted);font-weight:600;background:color-mix(in srgb,var(--line) 35%,transparent)}
+td.rowh{font-weight:600;text-align:start}
+td.diff{background:color-mix(in srgb,var(--t-question) 18%,transparent);font-weight:700}
+.wnote{font-size:.78rem;color:var(--muted);margin-top:6px}
+
+.bottomline{margin-top:20px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center;background:var(--ink);color:var(--bg);border-radius:12px;padding:14px 18px}
+.bottomline .lbl{font-family:var(--f-rashi);font-size:.85rem;opacity:.75;white-space:nowrap}
+.bottomline p{margin:0;font-family:var(--f-text);font-size:1.18rem;font-weight:500;text-wrap:balance}
+
+/* nav */
+.nav{position:fixed;inset:auto 0 0;z-index:5;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(6px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.nav .wrap{display:flex;gap:10px;align-items:center;justify-content:space-between;padding-block:10px}
+.nav .btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 16px;cursor:pointer;font-weight:600}
+.nav .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.nav .btn:disabled{opacity:.4;cursor:default}
+.keys{font-size:.8rem;color:var(--muted)}
+@media (max-width:600px){.keys{display:none}}
+
+/* summary */
+.sum-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.sum-grid{grid-template-columns:minmax(0,1fr)}}
+.times{display:grid;gap:6px}
+.trow{display:grid;grid-template-columns:minmax(0,9em) minmax(0,1fr) 3.4em;gap:8px;align-items:center;font-size:.88rem}
+.trow .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trow .barbg{height:10px;background:color-mix(in srgb,var(--line) 60%,transparent);border-radius:5px;overflow:hidden}
+.trow .barf{height:100%;background:var(--accent);border-radius:5px}
+.trow .v{font-variant-numeric:tabular-nums;text-align:end;color:var(--muted)}
+.total{font-family:var(--f-text);font-size:2rem;font-weight:700;font-variant-numeric:tabular-nums}
+.quiz{display:grid;gap:12px}
+.qi{border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.qi .q{font-weight:600;margin-bottom:6px}
+.qi .ans{margin:8px 0;color:var(--ink);font-family:var(--f-text);font-size:1.05rem}
+.qi .row{display:flex;gap:8px;flex-wrap:wrap}
+.qi .row button{border:1px solid var(--line);background:transparent;border-radius:8px;padding:4px 10px;cursor:pointer;font-size:.88rem}
+.qi .row button[aria-pressed="true"].yes{border-color:var(--t-answer);color:var(--t-answer);font-weight:700}
+.qi .row button[aria-pressed="true"].no{border-color:var(--t-kushya);color:var(--t-kushya);font-weight:700}
+.score{font-weight:700}
+.credits{font-size:.8rem;color:var(--muted);margin-top:28px;max-width:80ch}
+.credits a{color:inherit}
+.copied{font-size:.85rem;color:var(--t-answer);margin-inline-start:8px}
+.node.pause{border-style:dashed;background:transparent}
+.node.pause .txt{font-weight:600;color:var(--c)}
+.bridge{margin:0;max-width:68ch}
+.bridge b{font-family:var(--f-text)}
+.map{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.maprow{width:100%;display:grid;grid-template-columns:1.8em minmax(0,1fr) auto 3.2em;gap:10px;align-items:center;text-align:start;border:0;border-radius:8px;background:transparent;padding:7px 8px;cursor:pointer}
+.maprow:hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.mk{font-family:var(--f-rashi);color:var(--muted);text-align:center}
+.mt{font-weight:600;min-width:0}
+.ma,.mm{font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.qi .row button.opt[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);font-weight:700}
+.dinim{margin-bottom:20px}
+.dinim ol{margin:0;padding-inline-start:1.4em;display:grid;gap:6px;font-family:var(--f-text);font-size:1.12rem}
+.dinim b{font-weight:700}
+.pre-check{margin-bottom:20px;display:grid;gap:10px}
+.pq .q{font-weight:600}
+.pq .guess{font-size:.9rem;color:var(--muted)}
+.pq .ans{font-family:var(--f-text);font-size:1.05rem}
+.dafsel select{font:inherit;font-family:var(--f-rashi);font-size:.95rem;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:3px 8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.when{display:block;font-size:.78rem;font-weight:700;color:var(--accent);margin-bottom:2px}
+.dfields{display:grid;gap:8px}
+.dfields label{display:grid;grid-template-columns:minmax(0,1fr) 6.5em auto;gap:8px;align-items:center;font-size:.92rem}
+.dfields input{font:inherit;width:100%;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-variant-numeric:tabular-nums}
+.dfields small{color:var(--muted)}
+.dres{margin-top:10px;font-size:1.05rem}
+.dres b{font-family:var(--f-text);font-size:1.3rem;color:var(--t-conclusion);font-variant-numeric:tabular-nums}
+.verses{margin-top:16px;display:grid;gap:10px}
+.verse{--c:var(--t-verse);border:1px solid color-mix(in srgb,var(--c) 35%,var(--line));background:color-mix(in srgb,var(--c) 5%,var(--surface));border-radius:10px;padding:10px 14px;transition:opacity .15s}
+.verse.vhide{opacity:.25}
+.has-active .verse[data-n]:not(.on){opacity:.45}
+.verse.on{box-shadow:0 0 0 2px var(--c)}
+.vhead{display:flex;justify-content:space-between;gap:8px;font-size:.8rem;color:var(--muted);font-family:var(--f-rashi)}
+.vhead a{color:var(--accent);text-decoration:none;font-family:var(--f-ui)}
+.vtext{margin:4px 0 0;font-family:var(--f-text);font-size:1.22rem;line-height:2}
+.vk{background:color-mix(in srgb,var(--c) 18%,transparent);color:inherit;border-radius:3px;padding:0 2px;box-shadow:inset 0 -2px 0 color-mix(in srgb,var(--c) 65%,transparent)}
+.vk sup{font-family:var(--f-ui);font-size:.62em;font-weight:700;color:var(--c);margin-inline-end:2px}
+.discuss{margin-top:12px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center;border:1.5px dashed var(--t-scene);border-radius:12px;padding:12px 18px}
+.discuss .lbl{font-family:var(--f-rashi);font-size:.85rem;color:var(--t-scene);white-space:nowrap}
+.discuss p{margin:0;font-size:1.05rem;font-weight:600}
+.where{margin-bottom:14px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 14px}
+.where summary{cursor:pointer;font-size:.88rem;font-weight:600;color:var(--muted)}
+.tree{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:2px}
+.tr button{width:100%;text-align:start;border:0;background:transparent;cursor:pointer;padding:5px 8px;padding-inline-start:calc(8px + var(--d)*18px);border-radius:6px;font-size:.92rem;position:relative}
+.tr button::before{content:"";position:absolute;inset-inline-start:calc(var(--d)*18px - 6px);top:50%;width:8px;border-top:1.5px solid var(--line)}
+.tr[style*="--d:0"] button::before{display:none}
+.tr button:hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.tr.side button{color:var(--muted);font-style:italic}
+.tr.past button{color:var(--muted)}
+.tr.cur button{color:var(--accent);font-weight:700;background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.tr .tag{font-style:normal;font-size:.72rem;border:1px solid var(--line);border-radius:999px;padding:0 6px;margin-inline-end:6px}
+.tl-wrap{overflow-x:auto}
+.tl{position:relative;min-width:440px;padding-top:calc(var(--rows)*42px + 6px);padding-bottom:34px}
+.tl-pts{position:absolute;inset:0 0 34px 0}
+.tl-pt{position:absolute;bottom:calc(var(--r)*42px + 10px);transform:translateX(50%);text-align:center;display:grid;font-size:.8rem;line-height:1.25;white-space:nowrap;padding:3px 7px;border-radius:7px;background:color-mix(in srgb,var(--t-proof) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--t-proof) 45%,transparent)}
+.tl-pt::after{content:"";position:absolute;left:50%;bottom:calc(-10px - var(--r)*42px);height:calc(10px + var(--r)*42px);border-left:1.5px solid color-mix(in srgb,var(--t-proof) 55%,transparent)}
+.tl-pt span{color:var(--muted);font-size:.74rem}
+.tl-pt.start{background:color-mix(in srgb,var(--t-answer) 14%,var(--surface));border-color:color-mix(in srgb,var(--t-answer) 50%,transparent)}
+.tl-pt.end{background:color-mix(in srgb,var(--t-conclusion) 12%,var(--surface));border-color:color-mix(in srgb,var(--t-conclusion) 50%,transparent)}
+.tl-pt.clash{background:color-mix(in srgb,var(--t-kushya) 16%,var(--surface));border-color:var(--t-kushya)}
+.tl-pt.clash span{color:var(--t-kushya);font-weight:700}
+.tl-axis{position:absolute;inset:auto 0 0 0;height:34px;border-top:2px solid var(--ink)}
+.tl-tick{position:absolute;top:0;transform:translateX(50%);font-size:.74rem;color:var(--muted);white-space:nowrap;padding-top:6px;font-family:var(--f-rashi)}
+.tl-tick i{position:absolute;top:-6px;left:50%;height:8px;border-left:2px solid var(--ink)}
+.sum{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tile{display:grid;justify-items:center;min-width:3.2em;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.tile b{font-family:var(--f-text);font-size:1.25rem}
+.tile small{color:var(--muted);font-variant-numeric:tabular-nums}
+.tile.total{border-color:var(--t-drasha);background:color-mix(in srgb,var(--t-drasha) 12%,var(--surface))}
+.tile.total b{color:var(--t-drasha);font-variant-numeric:tabular-nums}
+.op{color:var(--muted);font-weight:700}
+.ladder{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.ladder li{display:grid;grid-template-columns:3.2em minmax(0,1fr) auto;gap:10px;align-items:center;padding:5px 10px;margin-inline-start:calc(var(--k)*10px);border-radius:8px;border:1px solid var(--line)}
+.ladder .ln{font-family:var(--f-text);font-size:1.3rem;font-weight:700;font-variant-numeric:tabular-nums;text-align:center}
+.ladder .lw{font-weight:600;font-size:.92rem}
+.ladder .lw small{display:block;font-weight:400;color:var(--muted);font-size:.78rem}
+.ladder .lr{font-size:.74rem;color:var(--t-rejection);border:1px solid var(--t-rejection);border-radius:999px;padding:0 7px}
+.ladder li.past{opacity:.55}
+.ladder li.next{opacity:.35}
+.ladder li.cur{border-color:var(--t-drasha);background:color-mix(in srgb,var(--t-drasha) 12%,var(--surface))}
+.ladder li.cur .ln{color:var(--t-drasha)}
+.ladder li.rej .ln{text-decoration:line-through}
+.sk-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:520px){.sk-grid{grid-template-columns:minmax(0,1fr)}}
+.sk svg{width:100%;height:auto;border-radius:8px;border:1px solid var(--line)}
+.sk-side{display:grid;gap:10px;min-width:0}
+.sk-row{display:grid;gap:4px;font-size:.88rem}
+.sk-row input{width:100%;accent-color:var(--accent)}
+.sk-row output{font-variant-numeric:tabular-nums;font-weight:700}
+.sk-chk{display:flex;gap:8px;align-items:center;font-size:.88rem;cursor:pointer}
+.sk-chk input{accent-color:var(--accent);width:16px;height:16px}
+.sk-status{display:grid;gap:6px;border-top:1px dashed var(--line);padding-top:10px}
+.sk-st{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:6px 8px;align-items:center;font-size:.86rem}
+.sk-st span:last-child{color:var(--muted)}
+.sk-st.dim{opacity:.5}
+.chip{font-size:.74rem;font-weight:700;border-radius:999px;padding:1px 8px;border:1px solid}
+.chip.ok{color:var(--t-answer);border-color:var(--t-answer)}
+.chip.bad{color:var(--t-kushya);border-color:var(--t-kushya)}
+.paras{display:grid;gap:10px;margin-bottom:6px}
+.paras p{margin:0;max-width:68ch;font-size:1.06rem;line-height:1.7}
+.paras b{font-family:var(--f-text);font-weight:700;font-size:1.05em}
+.cite{font-family:var(--f-ui);font-size:.68em;color:var(--t-verse);background:color-mix(in srgb,var(--t-verse) 10%,transparent);border-radius:4px;padding:0 3px;vertical-align:.15em;white-space:nowrap}
+td.yes{color:var(--t-answer);font-weight:700;font-size:1.05rem}
+td.no{color:var(--t-kushya);font-weight:700;font-size:1.05rem}
+.unit-tl{margin:0 0 16px;padding-top:0;border-top:0}
+.unit-tl .tl{min-width:600px}
+.unit-tl h3{font-size:.78rem;font-weight:700;color:var(--muted);letter-spacing:.06em}
+.tl-pt.lo{opacity:.42}
+.tl-pt.hi{box-shadow:0 0 0 2px var(--accent);font-weight:600}
+.tl-pt.fuzzy{border-style:dashed}
+.bands{display:grid;gap:6px}
+.brow{display:grid;grid-template-columns:3.4em minmax(0,1fr);gap:8px;align-items:center}
+.blab{font-size:.85rem;font-weight:600}
+.btrack{position:relative;height:34px;background:color-mix(in srgb,var(--line) 40%,transparent);border-radius:6px}
+.bseg{position:absolute;top:0;bottom:0;display:grid;place-items:center;border-inline-start:2px solid var(--surface);background:color-mix(in srgb,var(--t-verse) 18%,var(--surface));color:var(--ink);font-variant-numeric:tabular-nums;min-width:2px}
+.bseg b{font-family:var(--f-text);font-size:1.05rem}
+.bseg.none{background:var(--line)}
+.bseg.none b{display:none}
+.baxis{position:relative;height:18px;font-size:.74rem;color:var(--muted)}
+.baxis span{position:absolute;transform:translateX(50%);white-space:nowrap}
+.baxis span:first-child{transform:none}
+.baxis span:last-child{transform:translateX(100%)}
+.vilna{margin-bottom:16px;padding:10px 12px;border:1px solid color-mix(in srgb,var(--accent) 30%,var(--line));border-radius:10px;background:color-mix(in srgb,var(--accent) 3%,var(--surface))}
+.vhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;font-size:.86rem;margin-bottom:8px}
+.vhead b{font-size:.78rem;letter-spacing:.04em;color:var(--accent)}
+.vhead q{font-family:var(--f-text);font-weight:600;quotes:"«" "»"}
+.vrow{display:flex;gap:12px;align-items:flex-start}
+.vrow+.vrow{margin-top:10px}
+.vcrop{position:relative;overflow:hidden;flex:1 1 auto;min-width:0;border-radius:6px;background:#f4efe3;cursor:zoom-in;border:1px solid var(--line)}
+.vcrop img,.vthumb img,.vfull img{position:absolute;max-width:none;display:block}
+.vhl{position:absolute;border:2px solid #d9480f;background:rgba(255,196,0,.22);border-radius:3px;pointer-events:none;mix-blend-mode:multiply}
+.widget.photo{margin:0}.widget.photo img{width:100%;max-width:520px;display:block;margin:0 auto;border-radius:8px}.widget.photo figcaption{font-size:.8rem;color:var(--muted);margin-top:6px;text-align:center}.widget.photo a{color:var(--muted)}
+.lnks{display:flex;flex-wrap:wrap;gap:8px}.lnks a{text-decoration:none}
+.figsvg svg{width:100%;max-width:440px;height:auto;display:block;margin:4px auto 0;font-family:var(--f-ui,inherit)}
+.vdim{position:absolute;left:0;right:0;background:rgba(40,30,10,.38);pointer-events:none}
+.vbar{position:absolute;right:0;width:6px;background:#d9480f;pointer-events:none}
+.vthumb{position:relative;flex:none;width:72px;border:1px solid var(--line);border-radius:4px;overflow:hidden;cursor:zoom-in;background:#f4efe3}
+.vthumb .vhl{border-width:1.5px;border-radius:1px}
+.vcap{font-size:.72rem;color:var(--muted);text-align:center;margin-top:3px;font-family:var(--f-rashi)}
+.vmore{font-size:.74rem;color:var(--muted);margin-top:4px}
+.vcover{display:flex;gap:14px;flex-wrap:wrap}
+.vcover .vthumb{width:150px}
+.vmodal{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.72);overflow:auto;padding:16px;display:flex;justify-content:center;align-items:flex-start}
+.vmodal .vfull{position:relative;width:min(800px,100%);background:#f4efe3;border-radius:6px}
+.vmodal .vx{position:fixed;top:10px;left:12px;font-size:1.4rem;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:50%;width:38px;height:38px;cursor:pointer}
+@media (max-width:560px){.vthumb{display:none}.vcover .vthumb{display:block;width:44%}}
+textarea.copybox{width:100%;min-height:90px;margin-top:8px;font:inherit;font-size:.85rem;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px}
+
+.geo{margin:4px 0 6px}
+.geo svg{width:100%;max-width:460px;height:auto;max-height:78vh;display:block;margin:0 auto;font-family:var(--f-ui)}
+.geo .gp{cursor:pointer}
+.geo .gp .hl{opacity:0;transition:opacity .15s}
+.geo .gp.on .hl{opacity:.28}
+.has-active .geo .gp:not(.on){opacity:.35}
+.geo-leg{display:flex;flex-wrap:wrap;gap:4px 14px;justify-content:center;font-size:.78rem;color:var(--muted);margin-top:6px}
+.geo-leg svg{width:16px;height:16px;vertical-align:-3px;margin-inline-end:4px;display:inline}
+.geo-un{font-size:.86rem;margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+.geo-un b{font-family:var(--f-text)}
+.geo-un span{color:var(--muted)}
+
+/* optional study layers (questions / bagrut / lessons): off by default */
+.deep-panel{border-top:1px solid var(--line);padding-block:12px 14px;display:grid;gap:10px}
+.deep-panel .opts{display:flex;flex-wrap:wrap;gap:10px 22px}
+.deep-panel label{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 8px;align-items:start;cursor:pointer;max-width:30ch}
+.deep-panel input{width:17px;height:17px;margin:3px 0 0;accent-color:var(--accent)}
+.deep-panel b{font-weight:700}
+.deep-panel small{grid-column:2;color:var(--muted);font-size:.8rem;line-height:1.35}
+.deep-panel .dnote{font-size:.78rem;color:var(--muted)}
+.deep{margin-top:16px;display:grid;gap:14px}
+.dsec{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px;min-width:0}
+.dsec h2{font-size:.78rem;font-weight:700;color:var(--muted);letter-spacing:.06em;margin:0 0 10px}
+.dq{display:grid;gap:6px;padding-block:8px;border-top:1px dashed var(--line)}
+.dq:first-of-type{border-top:0;padding-top:0}
+.dq .q{font-weight:600}
+.dq .a{font-family:var(--f-text);font-size:1.05rem;margin:0}
+.dbtn{justify-self:start;border:1px solid var(--line);background:transparent;border-radius:8px;padding:4px 10px;cursor:pointer;font-size:.88rem}
+.dbtn:hover{border-color:var(--accent);color:var(--accent)}
+.bag{border-color:color-mix(in srgb,var(--t-conclusion) 45%,var(--line))}
+.bag .sug{font-family:var(--f-rashi);font-size:.86rem;color:var(--t-conclusion);margin-bottom:6px}
+.badge{display:inline-block;font-size:.74rem;font-weight:700;border-radius:999px;padding:1px 9px;border:1px solid;margin-inline-end:6px}
+.badge.real{color:var(--t-proof);border-color:var(--t-proof)}
+.badge.own{color:var(--t-question);border-color:var(--t-question)}
+.bmeta{font-size:.85rem;color:var(--muted);margin:6px 0 4px}
+.bmeta a,.lnk a,.more a{color:var(--accent)}
+.btext{white-space:pre-line;font-family:var(--f-text);font-size:1.06rem;line-height:1.75;margin:8px 0;max-width:72ch}
+.bans{white-space:pre-line;font-size:.98rem;line-height:1.7;margin:6px 0 0;padding:10px 12px;border-radius:8px;background:color-mix(in srgb,var(--t-answer) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--t-answer) 35%,var(--line));max-width:76ch}
+.bans .src{display:block;font-size:.78rem;font-weight:700;color:var(--t-answer);margin-bottom:4px;white-space:normal}
+.bans .src.own{color:var(--t-question)}
+.more{margin:10px 0 0;padding-inline-start:1.2em;font-size:.88rem;display:grid;gap:3px}
+.lnk{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.lnk a{text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:5px 11px;font-size:.9rem}
+.lnk a:hover{border-color:var(--accent)}
+.mine{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+.mine li{display:flex;gap:8px;align-items:center;min-width:0}
+.mine li a{color:var(--accent);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1 1 auto}
+.addf{display:grid;gap:8px;margin-top:10px;max-width:520px}
+.addf input{font:inherit;width:100%;padding:6px 9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);direction:ltr;text-align:left}
+.addf input.t{direction:rtl;text-align:right}
+.addf .row{display:flex;gap:8px;flex-wrap:wrap}
+.addf .err{color:var(--t-kushya);font-size:.85rem}
+.pilot{font-size:.8rem;color:var(--t-kushya);border:1px dashed color-mix(in srgb,var(--t-kushya) 50%,var(--line));border-radius:8px;padding:6px 10px;margin:0 0 14px}
+.brand .tag{font-family:var(--f-ui);font-size:.72rem;font-weight:700;color:var(--t-kushya);border:1px solid currentColor;border-radius:999px;padding:0 7px}
+</style>
+
+<header class="bar">
+  <div class="wrap">
+    <div class="brand"><b>דף בריצה</b><span class="tag">ניסוי</span><span id="dafName" hidden></span>
+      <label class="dafsel"><span class="sr">בחירת דף</span><select id="dafSel"></select></label></div>
+    <nav class="progress" id="progress" aria-label="שקפים"></nav>
+    <div class="tools">
+      <span class="timer" id="timer" title="זמן לימוד כולל">00:00</span>
+      <div class="seg" role="group" aria-label="מצב">
+        <button id="mStudy" aria-pressed="true">לימוד</button>
+        <button id="mLesson" aria-pressed="false">שיעור</button>
+      </div>
+      <button class="chip-btn" id="tExplain" aria-pressed="true">ביאור</button>
+      <button class="chip-btn" id="tDeep" aria-expanded="false" aria-controls="deepPanel">העמקה</button>
+    </div>
+  </div>
+  <div class="wrap deep-panel" id="deepPanel" hidden>
+    <div class="opts">
+      <label for="optQs"><input type="checkbox" id="optQs"><b>שאלות</b><small>2–3 שאלות הבנה בסוף כל שקף, עם ״הצג תשובה״.</small></label>
+      <label for="optBagrut"><input type="checkbox" id="optBagrut"><b>שאלת בגרות</b><small>בסוף כל סוגיה: שאלה משאלוני בגרות קודמים, או בניסוח עצמי.</small></label>
+      <label for="optLessons"><input type="checkbox" id="optLessons"><b>שיעורים</b><small>קישורים לשיעורים על הדף, ושיעורים שתוסיפו בעצמכם.</small></label>
+    </div>
+    <div class="dnote">כל השכבות כבויות כברירת מחדל. הבחירה והשיעורים שתוסיפו נשמרים רק בדפדפן הזה.</div>
+  </div>
+</header>
+
+<main class="wrap" id="stage"></main>
+
+<div class="nav">
+  <div class="wrap">
+    <button class="btn" id="prev">→ הקודם</button>
+    <span class="keys" id="keys">חיצים למעבר · לחיצה על צומת מדגישה את הטקסט</span>
+    <div style="display:flex;gap:8px">
+      <button class="btn" id="step" hidden>הצעד הבא</button>
+      <button class="btn primary" id="next">הבא ←</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const LIB = {"start": "suk2a", "library": [{"id": "suk2a", "daf": "סוכה ב׳", "book": "Sukkah", "group": "מסכת סוכה · יחידת הגבר 5291 (ניסוי)", "kind": "סוגיות 1–2", "bridge": "פותחים את מסכת סוכה. המשנה מונה ארבעה פסולים, והגמרא מתחילה בגבול העליון: **סוכה גבוהה מעשרים אמה**. קודם בירור לשוני (**״פסולה״ מול ״ימעט״**), ואחר כך **שלושה אמוראים, שלושה פסוקים ושלושה טעמים**.", "pretest": [{"q": "מה ההבדל בין ״פסולה״ לבין ״ימעט״?", "options": ["אין הבדל", "״פסולה״ קובעת פסול, ״ימעט״ מלמדת תיקון", "״ימעט״ חמור יותר"], "a": "״פסולה״ קובעת שהסוכה לא נעשתה כהלכה; ״ימעט״ מלמדת איך לתקן. בסוכה, דין תורה, המשנה אומרת ״פסולה״."}, {"q": "סוכה בגובה 25 אמה עם דפנות מברזל. למה היא עלולה להיפסל?", "options": ["כי היא גבוהה מדי", "כי הדפנות מברזל", "משתי הסיבות"], "a": "בגלל הגובה בלבד. לפי רבא דפנות ברזל כשרות עד עשרים אמה; הבעיה היא הגובה."}], "quiz": [{"q": "למה בסוכה המשנה אומרת ״פסולה״ ובמבוי ״ימעט״?", "a": "סוכה מן התורה ומבוי מדרבנן; או: בסוכה כמה פסולים, ומילה אחת כוללת את כולם."}, {"q": "למה לרבה סוכה מעל עשרים אמה פסולה?", "a": "העין לא רואה את הסכך, ואדם לא יודע שהוא יושב בסוכה."}, {"q": "למה סוכה בעשתרות קרנים כשרה לרבי זירא?", "a": "בלי ההרים הסכך עצמו מצל; בסוכה גבוהה בלי הדפנות אין צל סכך."}, {"q": "למה סוכה בדפנות ברזל כשרה לרבא?", "a": "עשרים אמה הם שיעור גובה: בגובה שאפשר לבנות בו עראי, כשר גם בניין קבע."}, {"q": "למה לא קיבלו את הפסוק של רבה?", "a": "הוא עוסק בידיעה של הדורות הבאים, לא בידיעת היושב בסוכה."}, {"q": "למה רבי זירא עומד על הפסוק מישעיהו, אף שהוא על ימות המשיח?", "a": "הנביא כתב ״סוכה״ ולא ״חופה״: שמעת מינה תרתי."}], "dinim": ["**סוכה גבוהה מעשרים אמה**: פסולה; **רבי יהודה מכשיר**. וגם: נמוכה מעשרה טפחים, פחות משלוש דפנות, חמתה מרובה מצלתה.", "**סוכה ״פסולה״, מבוי ״ימעט״**: סוכה מן התורה ומבוי מדרבנן; או: בסוכה הרבה פסולים במילה אחת.", "**רבה**: ״למען ידעו״: העין צריכה לשלוט בסכך.", "**רבי זירא**: ״וסוכה תהיה לצל״: צל הסכך ולא צל הדפנות (״דל עשתרות קרנים״).", "**רבא**: ״צא מדירת קבע ושב בדירת עראי״: עשרים אמה הם שיעור; מחיצות ברזל כשרות.", "**כל טעם נדחה אצל האחרים**: ידיעה לדורות; ימות המשיח; קושיית אביי."], "reviewFrom": [], "credits": "טקסט הגמרא: תלמוד בבלי, נוסח ויקיטקסט, דרך ספריא (CC-BY-SA). הפסוקים: ספריא. הביאור בשקפים בניסוח ובמבנה שלנו, על פי הגמרא עצמה, רש״י ותוספות (מתוך ספריא, נחלת הכלל) וביאור הרב שטיינזלץ לתלמוד הבבלי (מהדורת William Davidson, ספריא, ברישיון CC BY-NC 4.0: https://creativecommons.org/licenses/by-nc/4.0/). דברי שטיינזלץ עובדו ונוסחו מחדש, ואינם מובאים כלשונם; השימוש אינו מסחרי. להבנת הסוגיה נעזרנו גם ב״תלמוד בבלי המבואר – שפה ברורה״ (עוז והדר), ככלי עזר להבנה בלבד ולא כמקור לניסוח. נבדק מול טבלאות כולל עיון הדף (dafyomi.co.il). דף הש״ס: וילנא, דרך ספריא. תוכנית הלימודים: משרד החינוך, ״מסכת סוכה תשפ״ז, יחידת ההגבר 5291״ (meyda.education.gov.il). שאלות הבגרות בשכבת ״שאלת בגרות״: מתוך שאלוני בגרות ודגמי תשובות שפרסם משרד החינוך (©), עם קישור למקור; שאלות המסומנות ״ניסוח עצמי״ נכתבו כאן. גרסת ניסוי פרטית; מכיל קטעי שאלוני בגרות של משרד החינוך (©), להסרה. לפני כל פרסום פומבי יש להחליף את נוסח השאלות האמיתיות בקישורים ובשאלות בניסוח עצמי.", "deepen": null, "multi": false, "tree": null, "ladder": null, "timeline": null, "summaryTitle": null, "lessons": {"hadran": "sukkah", "kih": "sukah/hebcharts/su-tl-", "yt": "מסכת סוכה"}, "slides": [{"id": "a0", "amud": "", "kind": "הקדמה", "title": "פותחים מסכת: מה עושה סוכה לכשרה", "speakers": [], "text": [], "intro": true, "paras": ["מסכת **סוכה** עוסקת בחג הסוכות: הסוכה, ארבעת המינים ושמחת בית השואבה. הפרק הראשון, **״סוכה״**, קובע מה הופך מבנה לסוכה כשרה.", "לסוכה שני חלקים: **הסכך**, הגג מצמחים שנותן צל, ו**הדפנות**, הקירות. לפי רש״י, הסוכה נקראת על שם הסכך.", "מידות: **אמה** היא שישה **טפחים**. עשרים אמה הן כ־10 עד 11.5 מטר, ועשרה טפחים כ־80 עד 96 ס״מ (אמה = 48–58 ס״מ לפי השיעורים המקובלים).", "יחידת ההגבר בתושב״ע **5291** לשנת **תשפ״ז** פותחת בדפים אלה: **ב ע״א עד ג ע״א** (עד ״מאן תנא״). בתוכנית הם ארבע סוגיות; כאן הם שלוש יחידות, ועוד יחידת העשרה."], "explain": [], "nodes": [{"id": "c1", "type": "source", "label": "סכך", "text": "הגג שנותן צל; על שמו ״סוכה״"}, {"id": "c2", "type": "source", "label": "דפנות", "text": "הקירות של הסוכה"}, {"id": "c3", "type": "conclusion", "label": "אמה וטפח", "text": "אמה = 6 טפחים; 20 אמה ≈ 10–11.5 מטר"}, {"id": "c4", "type": "conclusion", "label": "תוכנית 5291", "text": "ב ע״א – ג ע״א: ארבע סוגיות"}], "verses": [], "widgets": [], "bottom": "סוכה היא סכך מעל דפנות; כל הפרק בודק מתי המבנה הזה עדיין ״סוכה״.", "qs": [{"q": "על שם מה נקראת הסוכה, לפי רש״י, ולמה זה חשוב לפרק?", "a": "על שם הסכך. לכן רוב הפסולים בפרק עוסקים בסכך: גובהו, הצל שלו והאם רואים אותו."}, {"q": "כמה טפחים יש בעשרים אמה?", "a": "120 טפחים, כי אמה היא שישה טפחים."}], "refs": [], "min": 0.75}, {"id": "a1", "amud": "ב׳ ע״א", "kind": "משנה", "title": "ארבעה פסולים בסוכה", "speakers": [["תנא קמא", "משנה"], ["רבי יהודה", "תנא"]], "text": [["2a:1", "מתני׳ {h|סוכה שהיא גבוהה למעלה מעשרים אמה פסולה} {y|ורבי יהודה מכשיר} "], ["2a:2", "{l|ושאינה גבוהה עשרה טפחים} {d|ושאין לה (שלשה) דפנות} {c|ושחמתה מרובה מצלתה פסולה}:"]], "explain": [["h", "סוכה ש**גבוהה למעלה מעשרים אמה**: הכוונה לגובה הסכך (שטיינזלץ). היא **פסולה**. למה? בזה עוסקת כל הסוגיה היום."], ["y", "**רבי יהודה מכשיר**: אצלו אין גובה מרבי. בברייתא בהמשך (ב ע״ב): עד ארבעים וחמישים אמה."], ["l", "סוכה **נמוכה מעשרה טפחים** פסולה. הגמרא תסביר את הטעם בהמשך המסכת (רש״י)."], ["d", "סוכה **שאין לה שלוש דפנות** פסולה. גם המקור לשלוש דפנות יתבאר בהמשך."], ["c", "**שחמתה מרובה מצלתה**: האור שנכנס דרך הסכך רב מהצל. לפי רש״י, הצל המועט **בטל ברוב**, וכאילו אין כאן סכך כלל."]], "nodes": [{"id": "h", "type": "conclusion", "label": "פסול א׳", "text": "גבוהה מעשרים אמה"}, {"id": "y", "type": "source", "label": "רבי יהודה", "to": "h", "text": "מכשיר גם מעל עשרים אמה"}, {"id": "l", "type": "conclusion", "label": "פסול ב׳", "text": "נמוכה מעשרה טפחים"}, {"id": "d", "type": "conclusion", "label": "פסול ג׳", "text": "פחות משלוש דפנות"}, {"id": "c", "type": "conclusion", "label": "פסול ד׳", "text": "חמתה מרובה מצלתה"}], "verses": [], "widgets": [{"type": "views", "title": "ארבעה פסולים, ארבעה תיקונים", "cols": ["הפסול", "התיקון (רש״י)"], "views": [{"name": "", "rows": [["גבוהה מעשרים אמה", "ימעט"], ["נמוכה מעשרה טפחים", "יגביה"], ["פחות משלוש דפנות", "יעשה לה דופן"], ["חמתה מרובה מצלתה", "יוסיף סכך"]]}]}], "bottom": "סוכה כשרה נמדדת בגובה, בדפנות ובצל; היום עוסקים בגבול העליון.", "qs": [{"q": "למה, לפי רש״י, סוכה שחמתה מרובה מצלתה פסולה אף שיש בה קצת צל?", "a": "הצל המועט בטל ברוב החמה, וכאילו אין סכך; והסוכה נקראת על שם הסכך."}, {"q": "מה ההבדל בין חכמים לרבי יהודה במשנה?", "a": "לחכמים יש לסוכה גובה מרבי, עשרים אמה; לרבי יהודה אין גבול כזה."}, {"q": "הטבלה מראה לכל פסול תיקון אחר. איך זה יעזור בשקף הבא?", "a": "הגמרא תשאל למה המשנה לא כתבה ״ימעט״ בסוכה, ואחד התירוצים הוא שיש כאן הרבה פסולים שלכל אחד תיקון אחר."}], "refs": ["2a:1", "2a:2"], "vilna": {"pages": [{"img": "vilna/Sukkah_2a.jpg", "amud": "2a", "w": 800, "h": 1315, "rects": [[300, 313, 225, 65]], "crop": [270, 283, 295, 125], "more": false}], "open": "סוכה שהיא גבוהה"}, "min": 1}, {"id": "a2", "amud": "ב׳ ע״א", "kind": "גמרא", "title": "סוכה ״פסולה״, מבוי ״ימעט״", "speakers": [["רבי יהודה", "תנא"]], "text": [["2a:3", "גמ׳ {m|תנן התם מבוי שהוא גבוה מעשרים אמה ימעט} {y|רבי יהודה אומר אינו צריך}"], ["2a:4", "{q|מאי שנא גבי סוכה דתני פסולה ומאי שנא גבי מבוי דתני תקנתא}"], ["2a:5", " {a1|סוכה דאורייתא תני פסולה מבוי דרבנן תני תקנתא}"], ["2a:6", " {a2|ואיבעית אימא בדאורייתא נמי תני תקנתא מיהו סוכה (דנפישי מילתה) פסיק ותני פסולה מבוי דלא נפיש מיליה תני תקנתא}"]], "explain": [["m", "**תנן התם**, במסכת עירובין: **מבוי**, סמטה שפתוחה לרשות הרבים, צריך קורה בפתחו כדי שיהיה מותר לטלטל בו. קורה **גבוהה מעשרים אמה**: **ימעט**, ישפיל אותה (רש״י)."], ["y", "**רבי יהודה אומר אינו צריך**: גם כאן הוא מקל מעל עשרים אמה, כמו בסוכה."], ["q", "אותו גובה ואותה מחלוקת, אבל לשון אחרת: בסוכה המשנה אומרת **פסולה**, ובמבוי היא מלמדת **תקנתא**, איך לתקן. למה?"], ["a1", "תירוץ ראשון: **סוכה דאורייתא**. לפי רש״י, שיעור עשרים אמה בסוכה נאמר מסיני עוד לפני המשנה, ולכן מתאים לומר שסוכה כזו **פסולה**: לא נעשתה כהלכה. **מבוי דרבנן**: הקורה כולה תקנת חכמים, והמשנה היא תחילת ההוראה. לכן היא מלמדת את התקנה, ולא ״פוסלת״."], ["a2", "תירוץ שני: גם בדין תורה אפשר לשנות תקנה. אבל בסוכה **נפישי מילתה**: המשנה מונה כמה פסולים, ולכל אחד תיקון אחר (רש״י). קצר יותר לכלול את כולם במילה אחת: **פסולה**. במבוי יש רק דין אחד, ולכן מספיק **ימעט**."]], "nodes": [{"id": "m", "type": "source", "label": "משנה בעירובין", "text": "מבוי גבוה מעשרים אמה: ימעט"}, {"id": "y", "type": "source", "label": "רבי יהודה", "to": "m", "text": "אינו צריך"}, {"id": "q", "type": "question", "label": "מאי שנא", "text": "למה ״פסולה״ בסוכה ו״ימעט״ במבוי?"}, {"id": "a1", "type": "answer", "label": "תירוץ א׳", "to": "q", "text": "סוכה מן התורה, מבוי מדרבנן"}, {"id": "a2", "type": "answer", "label": "תירוץ ב׳ (איבעית אימא)", "to": "q", "text": "בסוכה פסולים רבים: מילה אחת לכולם"}], "verses": [], "widgets": [{"type": "views", "title": "סוכה ומבוי באותו גובה", "cols": ["", "סוכה", "מבוי"], "views": [{"name": "", "rows": [["הלשון במשנה", "פסולה", "ימעט"], ["מקור הדין", "מן התורה", "מדרבנן"], ["כמה דינים באותה משנה", "ארבעה פסולים", "דין אחד"]]}]}], "bottom": "בדין תורה המשנה ״פוסלת״; בתקנת חכמים היא מלמדת איך לתקן.", "qs": [{"q": "מה דומה בין סוכה למבוי במשנה, ומה שונה?", "a": "בשניהם הגבול הוא עשרים אמה ורבי יהודה מקל; שונה הלשון: בסוכה ״פסולה״ ובמבוי ״ימעט״."}, {"q": "לפי התירוץ הראשון, למה לא מתאים לומר ״פסול״ על מבוי?", "a": "הקורה במבוי היא תקנת חכמים, והמשנה היא תחילת ההוראה; אין דין קודם שלפיו הוא ״פסול״."}, {"q": "לפי התירוץ השני, מה היה קורה אילו המשנה בסוכה הייתה כותבת תיקון?", "a": "היא הייתה צריכה לכתוב ארבעה תיקונים שונים; לכן קיצרה במילה אחת: פסולה."}], "bagrut": {"sugya": "סוגיה 1 בתוכנית: הבדל בין סוכה למבוי (ב ע״א)", "real": true, "exam": {"code": "006281", "name": "תלמוד, מסכת סוכה", "year": "קיץ תשפ״ג (2023)", "q": "שאלה 1", "url": "https://meyda.education.gov.il/files/mazkirut_pedagogit/toshbammd/628183k.pdf"}, "key": {"label": "דגם התשובות הרשמי של משרד החינוך, קיץ תשפ״ג", "url": "https://meyda.education.gov.il/files/mazkirut_pedagogit/toshbammd/628182kt.pdf"}, "text": "סוכה, מבוי ונר חנוכה\n״סוכה שהיא גבוהה למעלה מעשרים אמה... פסולה. מבוי שהוא גבוה מעשרים אמה... ימעט. סוכה דאורייתא תני פסולה, מבוי דרבנן תני תקנתא.״\nא. על פי רש״י, הסבירו את תירוץ הגמרא המצוטט. (3 נקודות)\nב. עיינו בהסבר הראשון של בעלי התוספות לתירוץ הגמרא, וענו על פי הסבר זה על השאלות שלפניכם:\n(1) ציינו איזו מן המילים ״פסולה״ או ״ימעט״ נחשבת ״לישנא מעליא״, והסבירו מדוע היא נחשבת כך.\n(2) מדוע בנוגע לסוכה נקטה המשנה לשון ״פסולה״, ובנוגע למבוי נקטה לשון ״ימעט״? (5 נקודות)\nג. בעלי התוספות הִקשו מברייתא במסכת שבת: ״נר חנוכה שהניחה למעלה מעשרים אמה פסולה, כסוכה וכמבוי.״\n(1) הסבירו את קושיית בעלי התוספות.\n(2) הסבירו אחד מן התירוצים של בעלי התוספות לקושייתם. (4 נקודות)", "answer": "א. בנוגע לסוכה – שמקור דין גובהה הוא מדאורייתא ונאמר בסיני – מתאים לִשְנות ״פסולה״, דהיינו שלא נעשתה כתורה וכהלכה. אבל בנוגע למבוי – שמקור דינו הוא מדרבנן – אין זה מתאים לִשְנות ״פסול״, מכיוון שהמשנה היא תחילת הוראתו ומצוותו, ולכן שנה התנא בלשון תקנה – ״ימעט״.\nב. (1) המילה ״ימעט״ היא ״לישנא מעליא״, כי היא מציעה תקנה ולא קובעת פסול, שהוא דבר מגונה.\n(2) בנוגע לסוכה, שהיא מדאורייתא, נקטה המשנה לשון ״פסולה״ מחשש שאם תנקוט לשון ״ימעט״ יובן בטעות שהכוונה היא שימעט לכתחילה, ובדיעבד כשרה אף אם לא מיעט, ועל ידי זה יעברו על מצוות עשה של סוכה. אבל בנוגע למבוי, שהוא מדרבנן, לא חששו להבנה לא נכונה, והעדיף התנא לנקוט ״לישנא מעליא״ – ״ימעט״. (תוד״ה ״דאורייתא״)\nג. (1) מדוע בנוגע לנר חנוכה, שהוא מדרבנן, נקטה הגמרא במסכת שבת לשון ״פסולה״ ולא נקטה לשון ״ימעט״ כמו במבוי, שגם הוא מדרבנן?\n(2) – מכיוון שהזכירה הגמרא במסכת שבת שנר חנוכה פסול ״כסוכה״, ובנוגע לסוכה, שהיא מדאורייתא, מתאים לומר ״פסולה״, נקטה גם בנוגע לנר חנוכה לשון ״פסולה״.\n– אילו הייתה הגמרא במסכת שבת נוקטת לשון ״ימעט״, היה משמע שצריך להשפיל את נר החנוכה הדלוק כפי שהוא, ואין זה נכון, אלא צריך להדליק את הנר שוב לאחר השפלתו [לפי מי שסובר שהדלקה עושה מצווה. וגם לפי מי שסובר שהנחה עושה מצווה, אין להשפיל את נר חנוכה הדלוק כפי שהוא, כדי שלא ייראה שלצורכו הוא מדליק].\n[הערה למעריכים: על הנבחנים להסביר אחד מן התירוצים.]", "answerSource": "key", "more": []}, "refs": ["2a:3", "2a:4", "2a:5", "2a:6"], "vilna": {"pages": [{"img": "vilna/Sukkah_2a.jpg", "amud": "2a", "w": 800, "h": 1315, "rects": [[300, 363, 225, 148]], "crop": [270, 333, 295, 208], "more": false}], "open": "תנן התם מבוי"}, "min": 1.25}, {"id": "a3", "amud": "ב׳ ע״א", "kind": "גמרא", "title": "רבה: ״למען ידעו דורותיכם״", "speakers": [["רבה", "אמורא בבל"]], "text": [["2a:7", "{q|מנה\"מ}"], ["2a:8", "{v|אמר רבה דאמר קרא (ויקרא כג, מג) למען ידעו דורותיכם כי בסוכות הושבתי את בני ישראל} {r|עד עשרים אמה אדם יודע שהוא דר בסוכה} {p|למעלה מעשרים אמה אין אדם יודע שדר בסוכה משום דלא שלטא בה עינא}"]], "explain": [["q", "**מנא הני מילי**: מאין יודעים שסוכה מעל עשרים אמה פסולה? שלושה אמוראים, שלושה פסוקים, שלושה טעמים."], ["v", "**רבה** לומד מהפסוק **״למען ידעו דורותיכם כי בסוכות הושבתי״**: הישיבה בסוכה צריכה להיות כזו ש**יודעים** שיושבים בסוכה."], ["r", "**עד עשרים אמה** העין פוגשת את הסכך גם בלי לחפש, ו**אדם יודע שהוא דר בסוכה**."], ["p", "**למעלה מעשרים אמה**, **לא שלטא בה עינא**: העין לא שולטת בסכך, ואדם לא שם לב שהוא יושב תחתיו. לפי רש״י, ״סוכה״ היא הסכך, ולכן הידיעה היא על הסכך."]], "nodes": [{"id": "q", "type": "question", "label": "מנא הני מילי", "text": "מה המקור לפסול עשרים אמה?"}, {"id": "v", "type": "drasha", "label": "הפסוק", "who": "רבה", "to": "q", "text": "למען ידעו דורותיכם"}, {"id": "r", "type": "conclusion", "label": "עד 20 אמה", "to": "v", "text": "העין רואה את הסכך: יודע שדר בסוכה"}, {"id": "p", "type": "conclusion", "label": "מעל 20 אמה", "to": "v", "text": "״לא שלטא בה עינא״"}], "verses": [{"ref": "Leviticus.23.43", "he": "ויקרא כג, מג", "text": "לְמַעַן יֵדְעוּ דֹרֹתֵיכֶם כִּי בַסֻּכּוֹת הוֹשַׁבְתִּי אֶת־בְּנֵי יִשְׂרָאֵל בְּהוֹצִיאִי אוֹתָם מֵאֶרֶץ מִצְרָיִם אֲנִי יְהֹוָה אֱלֹהֵיכֶם", "keys": ["לְמַעַן יֵדְעוּ דֹרֹתֵיכֶם", "כִּי בַסֻּכּוֹת הוֹשַׁבְתִּי"], "node": "v", "auto": true}], "widgets": [{"type": "sukkah", "focus": "rabbah", "controls": ["height"], "init": {"h": 24, "walls": false, "width": 4, "mountains": false, "iron": false}}], "bottom": "לרבה סוכה היא מקום שיודעים שיושבים בו, וזה נמדד במה שהעין רואה.", "qs": [{"q": "מה בדיוק צריך ״לדעת״ לפי רבה?", "a": "שהוא יושב בסוכה, כלומר תחת הסכך; לכן העין צריכה לראות את הסכך."}, {"q": "מה משתנה מעל עשרים אמה?", "a": "העין כבר לא פוגשת את הסכך מעצמה, ואדם לא שם לב שהוא בסוכה."}, {"q": "איזה שינוי בסוכה גבוהה היה פותר את הבעיה לפי רבה?", "a": "שינוי שמוביל את העין לסכך, למשל דפנות שמגיעות עד הסכך. הגמרא תגיע לזה בעמוד ב."}], "refs": ["2a:7", "2a:8"], "vilna": {"pages": [{"img": "vilna/Sukkah_2a.jpg", "amud": "2a", "w": 800, "h": 1315, "rects": [[300, 496, 225, 98]], "crop": [270, 466, 295, 158], "more": false}], "open": "מנה״מ אמר רבה"}, "min": 1.25}, {"id": "a4", "amud": "ב׳ ע״א", "kind": "גמרא", "title": "רבי זירא: ״וסוכה תהיה לצל יומם״", "speakers": [["רבי זירא", "אמורא"], ["אביי", "אמורא בבל"]], "text": [["2a:9", "{v|רבי זירא אמר מהכא (ישעיהו ד, ו) וסוכה תהיה לצל יומם מחורב} {r|עד עשרים אמה אדם יושב בצל סוכה} {p|למעלה מעשרים אמה אין אדם יושב בצל סוכה אלא בצל דפנות}"], ["2a:10", "{k|א\"ל אביי אלא מעתה העושה סוכתו בעשתרות קרנים הכי נמי דלא הוי סוכה}"], ["2a:11", "{a|א\"ל התם דל עשתרות קרנים איכא צל סוכה הכא דל דפנות ליכא צל סוכה}"]], "explain": [["v", "**רבי זירא** לומד מ**״וסוכה תהיה לצל יומם״**: סוכה היא מה שעושה **צל**. לפי רש״י, אין סכך אלא מה שעשוי לצל."], ["r", "**עד עשרים אמה** הצל על היושב בא מה**סכך**."], ["p", "**מעל עשרים אמה** הדפנות גבוהות כל כך, שלפי רש״י הצללים שלהן מגיעים זה לזה ומכסים את הסוכה. האדם יושב **בצל דפנות**, והסכך לא משנה דבר."], ["k", "**אביי** מקשה: אם כך, מי שבנה סוכה **בעשתרות קרנים**, בין שני הרים גבוהים שהשמש לא מגיעה ביניהם (רש״י), גם שם הצל לא מהסכך. וכי גם זו לא סוכה?"], ["a", "**רבי זירא**: **דל עשתרות קרנים**: תוריד בדמיון את ההרים, ונשאר **צל סוכה**, כי הסוכה עצמה בנויה כהלכה. אבל בסוכה הגבוהה, **דל דפנות**: תוריד את הדפנות, והשמש נכנסת מתחת לסכך (רש״י). **ליכא צל סוכה**."]], "nodes": [{"id": "v", "type": "drasha", "label": "הפסוק", "who": "רבי זירא", "text": "וסוכה תהיה לצל יומם"}, {"id": "r", "type": "conclusion", "label": "עד 20 אמה", "to": "v", "text": "יושב בצל הסכך"}, {"id": "p", "type": "conclusion", "label": "מעל 20 אמה", "to": "v", "text": "יושב בצל הדפנות"}, {"id": "k", "type": "kushya", "label": "אביי", "to": "p", "text": "סוכה בין הרים: גם שם אין צל סכך"}, {"id": "a", "type": "answer", "label": "תירוץ", "who": "רבי זירא", "to": "k", "text": "״דל״: מה נשאר כשמורידים את הגורם"}], "verses": [{"ref": "Isaiah.4.6", "he": "ישעיהו ד, ו", "text": "וְסֻכָּה תִּהְיֶה לְצֵל־יוֹמָם מֵחֹרֶב וּלְמַחְסֶה וּלְמִסְתּוֹר מִזֶּרֶם וּמִמָּטָר", "keys": ["וְסֻכָּה תִּהְיֶה לְצֵל־יוֹמָם"], "node": "v", "auto": true}], "widgets": [{"type": "sukkah", "focus": "zeira", "controls": ["height", "mountains"], "init": {"h": 24, "walls": false, "width": 4, "mountains": false, "iron": false}}], "bottom": "המבחן של רבי זירא: מורידים את מה שמסביב, ובודקים אם הסכך עדיין נותן צל.", "qs": [{"q": "מה ההבדל בין ההרים בעשתרות קרנים לבין הדפנות בסוכה גבוהה?", "a": "ההרים הם גורם מחוץ לסוכה, והסוכה עצמה נותנת צל; הדפנות הן חלק מהסוכה, ובלעדיהן הסכך הגבוה לא מצל."}, {"q": "למה דפנות גבוהות מצלות על כל הסוכה?", "a": "לפי רש״י, בגלל גובהן הצללים שלהן מגיעים זה לזה ומכסים את כל השטח."}, {"q": "איזו סוכה גבוהה הייתה כשרה לפי רבי זירא?", "a": "סוכה רחבה, שבה יש מקום בצל הסכך. הגמרא תאמר זאת בעמוד ב בשם רב הונא."}], "refs": ["2a:9", "2a:10", "2a:11"], "vilna": {"pages": [{"img": "vilna/Sukkah_2a.jpg", "amud": "2a", "w": 800, "h": 1315, "rects": [[300, 579, 225, 147]], "crop": [270, 549, 295, 207], "more": false}], "open": "רבי זירא אמר מהכא"}, "min": 1.75}, {"id": "a5", "amud": "ב׳ ע״א", "kind": "גמרא", "title": "רבא: ״צא מדירת קבע ושב בדירת עראי״", "speakers": [["רבא", "אמורא בבל"], ["אביי", "אמורא בבל"]], "text": [["2a:12", "{v|ורבא אמר מהכא (ויקרא כג, מב) בסוכות תשבו שבעת ימים} {d|אמרה תורה כל שבעת הימים צא מדירת קבע ושב בדירת עראי} {r|עד עשרים אמה אדם עושה דירתו דירת עראי} {p|למעלה מעשרים אמה אין אדם עושה דירתו דירת עראי אלא דירת קבע}"], ["2a:13", "{k|א\"ל אביי אלא מעתה עשה מחיצות של ברזל וסיכך על גבן הכי נמי דלא הוי סוכה}"], ["2a:14", "{a|א\"ל הכי קאמינא לך עד כ' אמה דאדם עושה דירתו דירת עראי כי עביד ליה דירת קבע נמי נפיק למעלה מכ' אמה דאדם עושה דירתו דירת קבע כי עביד ליה דירת עראי נמי לא נפיק}"]], "explain": [["v", "**רבא** לומד מ**״בסוכות תשבו שבעת ימים״**: סוכה היא דירה של שבעה ימים בלבד (רש״י)."], ["d", "מכאן: **צא מדירת קבע ושב בדירת עראי**. בחג יוצאים מהבית הקבוע למבנה ארעי."], ["r", "**עד עשרים אמה** אפשר לבנות דירה ארעית, במחיצות קלות."], ["p", "**מעל עשרים אמה** מבנה כזה צריך יסודות ומחיצות קבועים כדי שלא ייפול (רש״י): זו כבר **דירת קבע**."], ["k", "**אביי**: אם כך, מי ש**עשה מחיצות של ברזל** וסיכך עליהן בנה דירת קבע. וכי גם זו לא סוכה? (ולא מצאנו שסוכה כזו פסולה.)"], ["a", "**רבא**: **הכי קאמינא לך**. התורה נותנת **שיעור גובה**: **עד עשרים אמה**, גובה שאפשר לבנות בו עראי, **גם אם בנה קבע**, יצא. **מעל עשרים אמה**, גובה שמחייב בניין קבע, **גם אם בנה עראי**, לא יצא. לפי רש״י: הסוכה צריכה להיות בגובה שיכול לעמוד על יתדות ארעיות."]], "nodes": [{"id": "v", "type": "drasha", "label": "הפסוק", "who": "רבא", "text": "בסוכות תשבו שבעת ימים"}, {"id": "d", "type": "drasha", "label": "הדרשה", "to": "v", "text": "צא מדירת קבע ושב בדירת עראי"}, {"id": "r", "type": "conclusion", "label": "עד 20 אמה", "to": "d", "text": "אפשר לבנות דירת עראי"}, {"id": "p", "type": "conclusion", "label": "מעל 20 אמה", "to": "d", "text": "הבניין חייב להיות קבע"}, {"id": "k", "type": "kushya", "label": "אביי", "to": "d", "text": "מחיצות של ברזל: דירת קבע, וכשרה"}, {"id": "a", "type": "answer", "label": "תירוץ", "who": "רבא", "to": "k", "text": "עשרים אמה הם שיעור, לא אופן הבנייה"}], "verses": [{"ref": "Leviticus.23.42", "he": "ויקרא כג, מב", "text": "בַּסֻּכֹּת תֵּשְׁבוּ שִׁבְעַת יָמִים כׇּל־הָאֶזְרָח בְּיִשְׂרָאֵל יֵשְׁבוּ בַּסֻּכֹּת", "keys": ["בַּסֻּכֹּת תֵּשְׁבוּ שִׁבְעַת יָמִים"], "node": "v", "auto": true}], "widgets": [{"type": "sukkah", "focus": "rava", "controls": ["height", "iron"], "init": {"h": 18, "walls": false, "width": 4, "mountains": false, "iron": true}}], "bottom": "לרבא ״עראי״ הוא מידה של גובה: אם אפשר לבנות כאן עראי, לא איך בנו בפועל.", "qs": [{"q": "מה בדיוק הקשה אביי על רבא?", "a": "לפי רבא סוכה צריכה להיות דירת עראי, ואז סוכה בדפנות ברזל, שהיא קבע, הייתה צריכה להיפסל."}, {"q": "איך רבא מסביר שסוכה בדפנות ברזל כשרה, אבל סוכה ארעית בגובה 25 אמה פסולה?", "a": "הקובע הוא הגובה: עד עשרים אמה אפשר לבנות עראי, ולכן כשרה גם בקבע; מעל עשרים אמה בונים רק קבע, ולכן פסולה גם כשבנו עראי."}, {"q": "מה ההבדל בין ״לבנות עראי״ לבין ״גובה שאפשר לבנות בו עראי״?", "a": "הראשון בודק את הבנייה בפועל; השני בודק רק אם הגובה מאפשר מבנה עראי. רבא מסתפק בשני."}], "refs": ["2a:12", "2a:13", "2a:14"], "vilna": {"pages": [{"img": "vilna/Sukkah_2a.jpg", "amud": "2a", "w": 800, "h": 1315, "rects": [[300, 711, 225, 198]], "crop": [270, 681, 295, 258], "more": false}], "open": "ורבא אמר מהכא"}, "min": 1.75}, {"id": "a6", "amud": "ב׳ ע״ב", "kind": "גמרא", "title": "למה כל אמורא לא קיבל את הטעמים האחרים", "speakers": [["רבה", "אמורא"], ["רבי זירא", "אמורא"], ["רבא", "אמורא"]], "text": [["2b:1", "{r|כולהו כרבה לא אמרי ההוא ידיעה לדורות היא}"], ["2b:2", "{z|כרבי זירא נמי לא אמרי ההוא לימות המשיח הוא דכתיב}"], ["2b:3", "{za|ור' זירא א\"כ לימא קרא וחופה תהיה לצל יומם ומאי וסוכה תהיה לצל יומם שמעת מינה תרתי}"], ["2b:4", "{ra|כרבא נמי לא אמרי משום קושיא דאביי}"]], "explain": [["r", "**כולהו כרבה לא אמרי**: ״למען ידעו דורותיכם״ מדבר על **ידיעה לדורות**: שהדורות הבאים יֵדעו על הסוכות במדבר (לפי רש״י, ענני הכבוד). זו לא ידיעה של היושב בסוכה."], ["z", "**כרבי זירא נמי לא אמרי**: הפסוק בישעיהו מדבר **לימות המשיח**, על הסוכה שבה הקב״ה יגן על ישראל, ולא על סוכת המצווה."], ["za", "**ורבי זירא?** אילו הנביא דיבר רק על מחסה, היה כותב **״וחופה תהיה לצל יומם״**. הוא בחר במילה **״וסוכה״**, ו**שמעת מינה תרתי**: גם הנבואה, וגם שסוכה היא מה שעשוי לצל."], ["ra", "**כרבא נמי לא אמרי**, **משום קושיא דאביי**, מחיצות של ברזל. לפי רש״י, התירוץ של רבא לא שכנע אותם: אם הפסוק לא מקפיד באמת על עראי, אי אפשר ללמוד ממנו שיעור."]], "nodes": [{"id": "r", "type": "rejection", "label": "על רבה", "text": "הפסוק עוסק בידיעה של הדורות"}, {"id": "z", "type": "rejection", "label": "על רבי זירא", "text": "הפסוק עוסק בימות המשיח"}, {"id": "za", "type": "answer", "label": "רבי זירא משיב", "to": "z", "text": "״וסוכה״ ולא ״וחופה״: שמעת מינה תרתי"}, {"id": "ra", "type": "rejection", "label": "על רבא", "text": "קושיית אביי: מחיצות של ברזל"}], "verses": [], "widgets": [{"type": "views", "title": "שלושה טעמים, שלוש בעיות", "cols": ["", "הפסוק", "הטעם", "למה האחרים לא קיבלו"], "views": [{"name": "", "rows": [["רבה", "למען ידעו דורותיכם", "העין צריכה לראות את הסכך", "ידיעה לדורות, לא ליושב"], ["רבי זירא", "וסוכה תהיה לצל יומם", "צל מהסכך, לא מהדפנות", "פסוק על ימות המשיח"], ["רבא", "בסוכות תשבו שבעת ימים", "גובה של דירת עראי", "קושיית אביי: מחיצות ברזל"]]}]}], "bottom": "לכל טעם יש קושי, ולכן כל אמורא נשאר עם הפסוק שלו.", "qs": [{"q": "מה עונה רבי זירא לטענה שהפסוק שלו עוסק בימות המשיח?", "a": "הנביא בחר במילה ״סוכה״ ולא ״חופה״, וזה מלמד גם שסוכה היא דבר העשוי לצל: שמעת מינה תרתי."}, {"q": "למה, לפי רש״י, לא קיבלו את התירוץ של רבא לאביי?", "a": "לפי התירוץ התורה לא מקפידה באמת על עראי, ואז קשה ללמוד מהפסוק שיעור גובה."}, {"q": "איזה טעם עוסק בסכך, ואיזה בבניין כולו?", "a": "רבה ורבי זירא עוסקים בסכך (רואים אותו, יושבים בצלו); רבא עוסק במבנה כולו, בגובה שמאפשר דירת עראי."}], "bagrut": {"sugya": "סוגיה 2 בתוכנית: מדוע סוכה מעל 20 אמה פסולה (ב ע״א – ב ע״ב)", "real": true, "exam": {"code": "006281", "name": "תלמוד, מסכת סוכה", "year": "קיץ תשע״ז (2017)", "q": "שאלה 6", "url": "https://meyda.education.gov.il/files/mazkirut_pedagogit/toshbammd/628177.pdf"}, "key": {"label": "דגם התשובות הרשמי של משרד החינוך, קיץ תשע״ז", "url": "https://meyda.education.gov.il/files/mazkirut_pedagogit/toshbammd/d-006281-06-17.pdf"}, "text": "סוכה גבוהה מעשרים אמה; סוכה — דירת עראי\nא. על פי הגמרא, יש שלושה טעמים של שלושה אמוראים לפסילת סוכה הגבוהה מעשרים אמה. הסבר מהי הבעיה בכל אחד מן הטעמים שבגללה שני האמוראים האחרים היו צריכים להציע טעם אחר. (5 נקודות)\nב. לפי רבא, סוכה צריכה להיות דירת עראי.\n(1) לפי התוספות, מהו גֶּדֶר עראי בנוגע לדפנות, ומהו גדר עראי בנוגע לסכך?\n(2) הסבר מדוע יש הבדל בין גדר עראי בנוגע לסכך ובין גדר עראי בנוגע לדפנות. (4 נקודות)", "answer": "א. הבעיה בטעם של רבה היא שטעמו מתבסס על כך שהפסוק ״למען יֵדעו דורותיכם״ עוסק בידיעה של היושב בסוכה, אבל אפשר להבין שהכוונה היא לידיעה של הדורות הבאים.\nהבעיה בטעם של רבי זירא היא שטעמו מתבסס על פסוק שעוסק בסוכה שהקב״ה יעשה בימות המשיח.\nהבעיה בטעם של רבא היא שעל פי טעמו יש לפסול גם סוכה נמוכה מעשרים אמה כאשר הסכך מונח על מחיצות של ברזל, כלומר בדרך קבע.\nב. (1) גדר עראי בנוגע לדפנות — אם יש אפשרות לעשות את הדפנות בדרך עראי (גם אם בפועל נבנו בדרך קבע). גדר עראי בנוגע לסכך — רק אם נבנה בפועל בדרך עראי.\n(2) יש הבדל בין גדר עראי בנוגע לסכך ובין גדר עראי בנוגע לדפנות כי עיקר הסוכה הוא הסכך. (תוד״ה ״כי״, ב ע״א)", "answerSource": "key", "more": [{"label": "6281 קיץ תשפ״ד, שאלה 1 (רבא, אביי ותוספות)", "url": "https://meyda.education.gov.il/files/Pop/0files/toshba-hemed/6281sh.pdf", "key": "https://meyda.education.gov.il/files/Pop/0files/toshba-hemed/sh6281.pdf"}, {"label": "5281 קיץ תשפ״ד, שאלה 9 (רבא ואביי)", "url": "https://meyda.education.gov.il/files/Pop/0files/toshba-hemed/5281she.pdf"}, {"label": "5281 קיץ תשע״ח, שאלה 8 (טעמו של רבי זירא)", "url": "https://meyda.education.gov.il/files/mazkirut_pedagogit/toshbammd/528178.pdf"}, {"label": "6284 קיץ תשפ״ד, שאלה 1 (+ תשובון)", "url": "https://meyda.education.gov.il/files/Pop/0files/toshba-hemed/6284sh.pdf", "key": "https://meyda.education.gov.il/files/Pop/0files/toshba-hemed/6284ans.pdf"}]}, "refs": ["2b:1", "2b:2", "2b:3", "2b:4"], "vilna": {"pages": [{"img": "vilna/Sukkah_2b.jpg", "amud": "2b", "w": 800, "h": 1315, "rects": [[265, 159, 240, 98]], "crop": [235, 129, 310, 158], "more": false}], "open": "כולהו כרבה לא אמרי"}, "min": 1.25}]}, {"id": "suk2b", "daf": "סוכה ב׳–ג׳", "book": "Sukkah", "group": "מסכת סוכה · יחידת הגבר 5291 (ניסוי)", "kind": "סוגיה 3", "bridge": "אתמול: שלושה טעמים לפסול סוכה גבוהה מעשרים אמה: **רבה**, העין לא רואה את הסכך; **רבי זירא**, יושבים בצל הדפנות; **רבא**, זו דירת קבע. היום: שלוש אמירות בשם רב, **מתי גם חכמים מכשירים** סוכה גבוהה, ואיך הן מסתדרות עם **סוכת הילני המלכה**.", "pretest": [{"q": "סוכה גבוהה מעשרים אמה, אבל רחבה מאוד (10×10 אמות). כשרה?", "options": ["כן", "לא", "תלוי בטעם הפסול"], "a": "תלוי בטעם: לרב הונא, כטעם רבי זירא, כשרה כי יש בה צל סכך; לטעם רבה רוחב לא עוזר."}, {"q": "מלכה ישבה בסוכה גבוהה, והזקנים שתקו. מה אפשר ללמוד?", "options": ["שהסוכה כשרה", "כלום, היא פטורה", "תלוי איפה ישבו הבנים"], "a": "תלוי איפה ישבו הבנים: לרבנן הם ישבו בסוכה הגדולה והכשרה, ולרבי יהודה איתה בחדר הקטן."}], "quiz": [{"q": "למה רבי יאשיה מתאים לרבה?", "a": "כשהדפנות מגיעות לסכך, העין עולה איתן ורואה את הסכך."}, {"q": "למה רב הונא מתאים לרבי זירא?", "a": "בסוכה רחבה מארבע אמות יש מקום שבו יושבים בצל הסכך."}, {"q": "למה דברי רב חנן בר רבה ״לא כחד״?", "a": "סוכה קצת גדולה מהשיעור לא משנה לא את העין, לא את הצל ולא את הקבע."}, {"q": "במה נחלקו רב הונא ורב חנן, לפי המסקנה?", "a": "לא בגודל המזערי, אלא עד איזה גודל חכמים פוסלים סוכה גבוהה."}, {"q": "למה רבי יהודה הוסיף ״כל מעשיה על פי חכמים״?", "a": "כדי שגם חיוב דרבנן של בן קטן יחייב אותה להקפיד."}, {"q": "למה לפי רבנן לא העירו להילני?", "a": "היא ישבה בחדר הקטן משום צניעות, ובניה בסוכה הגדולה והכשרה."}], "dinim": ["**רבי יאשיה (רב)**: דפנות מגיעות לסכך: כשרה מעל 20 אמה; כרבה.", "**רב הונא (רב)**: יותר מ־4×4 אמות: כשרה; כרבי זירא.", "**רב חנן בר רבה (רב)**: יותר מראשו ורובו ושולחנו: כשרה; לא כאף טעם.", "**רב הונא ורב חנן**: לכולם המזערי הוא ראשו ורובו ושולחנו; נחלקו עד איזה גודל חכמים פוסלים.", "**הילני המלכה**: הזקנים שתקו; חכמים: אשה פטורה; רבי יהודה: שבעה בנים, ו״כל מעשיה על פי חכמים״.", "**קיטוניות שבה** (רב אשי): רבנן: הבנים בסוכה הגדולה; רבי יהודה: הבנים איתה בחדר הקטן."], "reviewFrom": [{"id": "suk2a", "n": 2, "when": "אתמול"}], "credits": "טקסט הגמרא: תלמוד בבלי, נוסח ויקיטקסט, דרך ספריא (CC-BY-SA). הפסוקים: ספריא. הביאור בשקפים בניסוח ובמבנה שלנו, על פי הגמרא עצמה, רש״י ותוספות (מתוך ספריא, נחלת הכלל) וביאור הרב שטיינזלץ לתלמוד הבבלי (מהדורת William Davidson, ספריא, ברישיון CC BY-NC 4.0: https://creativecommons.org/licenses/by-nc/4.0/). דברי שטיינזלץ עובדו ונוסחו מחדש, ואינם מובאים כלשונם; השימוש אינו מסחרי. להבנת הסוגיה נעזרנו גם ב״תלמוד בבלי המבואר – שפה ברורה״ (עוז והדר), ככלי עזר להבנה בלבד ולא כמקור לניסוח. נבדק מול טבלאות כולל עיון הדף (dafyomi.co.il). דף הש״ס: וילנא, דרך ספריא. תוכנית הלימודים: משרד החינוך, ״מסכת סוכה תשפ״ז, יחידת ההגבר 5291״ (meyda.education.gov.il). שאלות הבגרות בשכבת ״שאלת בגרות״: מתוך שאלוני בגרות ודגמי תשובות שפרסם משרד החינוך (©), עם קישור למקור; שאלות המסומנות ״ניסוח עצמי״ נכתבו כאן. גרסת ניסוי פרטית; מכיל קטעי שאלוני בגרות של משרד החינוך (©), להסרה. לפני כל פרסום פומבי יש להחליף את נוסח השאלות האמיתיות בקישורים ובשאלות בניסוח עצמי.", "deepen": null, "multi": true, "tree": null, "ladder": null, "timeline": null, "summaryTitle": null, "lessons": {"hadran": "sukkah", "kih": "sukah/hebcharts/su-tl-", "yt": "מסכת סוכה"}, "slides": [{"id": "b1", "amud": "ב׳ ע״ב", "kind": "גמרא", "title": "רבי יאשיה: דפנות שמגיעות עד הסכך", "speakers": [["רבי יאשיה", "אמורא"], ["רב", "אמורא בבל"]], "text": [["2b:5", "{q|כמאן אזלא הא דאמר ר' יאשיה אמר רב} {s|מחלוקת בשאין דפנות מגיעות לסכך} {k|אבל דפנות מגיעות לסכך אפילו למעלה מעשרים אמה כשרה} כמאן"], ["2b:6", "{a|כרבה דאמר משום דלא שלטא בה עינא וכיון דדפנות מגיעות לסכך משלט שלטא בה עינא}"]], "explain": [["q", "**כמאן אזלא**: לפי איזה מהטעמים של אתמול הולכים דבריו של **רבי יאשיה בשם רב**?"], ["s", "רב מצמצם את המחלוקת של חכמים ורבי יהודה: היא רק בסוכה ש**הדפנות לא מגיעות לסכך**, כשיש רווח בין ראש הדפנות לסכך."], ["k", "אבל אם **הדפנות מגיעות עד הסכך**, גם חכמים מכשירים, **אפילו למעלה מעשרים אמה**."], ["a", "**כרבה**: הבעיה אצלו היא שהעין לא רואה את הסכך. כשהדפנות מגיעות לסכך, העין עולה לאורכן, ו**משלט שלטא בה עינא**. לפי רש״י, לטעם הצל או לטעם העראי אין סיבה להכשיר במקרה כזה."]], "nodes": [{"id": "q", "type": "question", "label": "כמאן", "text": "לפי איזה טעם?"}, {"id": "s", "type": "source", "label": "רבי יאשיה בשם רב", "text": "המחלוקת רק כשהדפנות לא מגיעות לסכך"}, {"id": "k", "type": "source", "label": "ההמשך", "to": "s", "text": "דפנות מגיעות לסכך: כשרה מעל 20 אמה"}, {"id": "a", "type": "answer", "label": "כרבה", "to": "q", "text": "העין עולה עם הדפנות אל הסכך"}], "verses": [], "widgets": [{"type": "sukkah", "focus": "rabbah", "controls": ["height", "walls"], "init": {"h": 26, "walls": true, "width": 4, "mountains": false, "iron": false}}], "bottom": "אם הבעיה היא העין, הפתרון הוא להוביל אותה: דפנות עד הסכך.", "qs": [{"q": "למה דברי רבי יאשיה לא מתאימים לרבי זירא?", "a": "לרבי זירא הבעיה היא צל הדפנות, ודפנות שמגיעות עד הסכך מצלות לא פחות."}, {"q": "במה ״מצמצם״ רב את המחלוקת שבמשנה?", "a": "לפיו חכמים פוסלים רק כשיש רווח בין הדפנות לסכך; אם הדפנות מגיעות לסכך, הם מודים לרבי יהודה."}], "refs": ["2b:5", "2b:6"], "vilna": {"pages": [{"img": "vilna/Sukkah_2b.jpg", "amud": "2b", "w": 800, "h": 1315, "rects": [[265, 242, 240, 114]], "crop": [235, 212, 310, 174], "more": false}], "open": "כמאן אזלא הא דאמר ר׳ יאשיה"}, "min": 1.25}, {"id": "b2", "amud": "ב׳ ע״ב", "kind": "גמרא", "title": "רב הונא ורב חנן בר רבה: כשהסוכה גדולה", "speakers": [["רב הונא", "אמורא בבל"], ["רב חנן בר רבה", "אמורא בבל"]], "text": [["2b:7", "{h|כמאן אזלא הא דאמר רב הונא אמר רב מחלוקת בשאין בה אלא ארבע אמות על ארבע אמות} {h2|אבל יש בה יותר מארבע אמות על ארבע אמות אפי' למעלה מעשרים אמה כשרה} כמאן"], ["2b:8", "{ha|כרבי זירא דאמר משום צל הוא וכיון דרויחא איכא צל סוכה}"], ["2b:9", "{c|כמאן אזלא הא דאמר רב חנן בר רבה אמר רב מחלוקת בשאינה מחזקת אלא כדי ראשו ורובו ושולחנו} {c2|אבל מחזקת יותר מכדי ראשו ורובו ושולחנו אפי' למעלה מעשרים אמה כשרה} {ca|כמאן דלא כחד}"]], "explain": [["h", "**רב הונא בשם רב**: המחלוקת רק בסוכה **של ארבע אמות על ארבע אמות**."], ["h2", "סוכה **גדולה מארבע על ארבע אמות**: גם חכמים מכשירים מעל עשרים אמה."], ["ha", "**כרבי זירא**: הבעיה אצלו היא הצל. בסוכה **רווחא**, מרווחת, צל הדפנות לא מכסה הכול, ובאמצע **יש צל סוכה**. לפי רש״י, לטעם של רבה זה לא עוזר: בסוכה רחבה העין רואה את הסכך עוד פחות."], ["c", "**רב חנן בר רבה בשם רב**: המחלוקת רק בסוכה ש**מחזקת בדיוק ראשו ורובו ושולחנו**: מקום לראש ולרוב הגוף של אדם ולשולחן שלו. לפי רש״י, אכלו בהסבה, ולכן זו המידה."], ["c2", "כל סוכה **גדולה מזה**: כשרה גם מעל עשרים אמה."], ["ca", "**כמאן? דלא כחד**: זה לא מתאים לאף אחד מהטעמים. לפי רש״י, בסוכה קצת גדולה יותר העין עדיין לא רואה, אין צל סכך, והמבנה עדיין קבע."]], "nodes": [{"id": "h", "type": "source", "label": "רב הונא בשם רב", "text": "המחלוקת: בסוכה של ד׳ על ד׳ אמות"}, {"id": "h2", "type": "source", "label": "ההמשך", "to": "h", "text": "יותר מד׳ אמות: כשרה מעל 20 אמה"}, {"id": "ha", "type": "answer", "label": "כרבי זירא", "to": "h", "text": "סוכה רחבה: יש בה צל סכך"}, {"id": "c", "type": "source", "label": "רב חנן בר רבה בשם רב", "text": "המחלוקת: כשמחזקת רק ראשו ורובו ושולחנו"}, {"id": "c2", "type": "source", "label": "ההמשך", "to": "c", "text": "גדולה מזה: כשרה מעל 20 אמה"}, {"id": "ca", "type": "conclusion", "label": "כמאן", "to": "c", "text": "״דלא כחד״: לא כאף טעם"}], "verses": [], "widgets": [{"type": "views", "title": "שלוש אמירות בשם רב", "cols": ["", "מתי גם חכמים מכשירים מעל 20 אמה", "לפי איזה טעם"], "views": [{"name": "", "rows": [["רבי יאשיה", "דפנות מגיעות לסכך", "רבה (העין)"], ["רב הונא", "סוכה גדולה מ־4×4 אמות", "רבי זירא (הצל)"], ["רב חנן בר רבה", "גדולה מראשו ורובו ושולחנו", "לא כאף אחד"]]}]}, {"type": "sukkah", "focus": "zeira", "controls": ["height", "width"], "init": {"h": 24, "walls": false, "width": 6, "mountains": false, "iron": false}}], "bottom": "כל אמירה בשם רב מכשירה סוכה גבוהה במקרה אחר, וכל מקרה מגלה איזה טעם עומד מאחוריה.", "qs": [{"q": "למה סוכה רחבה עוזרת לפי רבי זירא?", "a": "בסוכה רחבה צל הדפנות לא מגיע לאמצע, ושם יושבים בצל הסכך."}, {"q": "מה פירוש ״דלא כחד״?", "a": "דברי רב חנן בר רבה לא מתאימים לאף אחד משלושת הטעמים לפסול עשרים אמה."}, {"q": "למה המידה היא ״ראשו ורובו ושולחנו״?", "a": "לפי רש״י אכלו בהסבה: הראש ורוב הגוף על המיטה, והשולחן לפניהם. זה המקום שאדם צריך כדי לאכול בסוכה."}], "refs": ["2b:7", "2b:8", "2b:9"], "vilna": {"pages": [{"img": "vilna/Sukkah_2b.jpg", "amud": "2b", "w": 800, "h": 1315, "rects": [[265, 341, 240, 181]], "crop": [235, 311, 310, 241], "more": false}], "open": "כמאן אזלא הא דאמר רב הונא"}, "min": 1.75}, {"id": "b3", "amud": "ב׳ ע״ב", "kind": "גמרא", "title": "רב הונא ורב חנן: במה הם חולקים?", "speakers": [], "text": [["2b:10", "{y|בשלמא דרבי יאשיה פליגא אדרב הונא ורב חנן בר רבה דאינהו קא יהבי שעורא במשכא ואיהו לא קא יהיב שעורא במשכא}"], ["2b:11", "{p|אלא רב הונא ורב חנן בר רבה נימא בהכשר סוכה קמיפלגי דמר סבר הכשר סוכה בארבע אמות ומר סבר הכשר סוכה במחזקת ראשו ורובו ושולחנו}"], ["2b:12", "{n|לא דכולי עלמא הכשר סוכה ראשו ורובו ושולחנו} {c|והכא בהא קמיפלגי דמר סבר במחזקת ראשו ורובו ושולחנו פליגי אבל יותר מראשו ורובו ושולחנו ד\"ה כשרה}"], ["2b:13", "{h|ומר סבר מראשו ורובו ושולחנו עד ד' אמות פליגי אבל יותר מד' אמות דברי הכל כשרה}"]], "explain": [["y", "ברור ש**רבי יאשיה** חולק על שניהם: **הם נותנים שיעור במשכא**, בשטח הסוכה, והוא לא נותן שיעור בשטח אלא בדפנות."], ["p", "ו**רב הונא ורב חנן בר רבה**? הצעה: הם חלוקים **בהכשר סוכה**, הגודל המזערי. לרב הונא, ארבע על ארבע אמות; לרב חנן, ראשו ורובו ושולחנו. כל אחד אמר: המחלוקת היא בסוכה הקטנה ביותר."], ["n", "דחייה: **לא**. **כולם מסכימים** שסוכה כשרה כבר כשהיא מחזקת **ראשו ורובו ושולחנו**."], ["c", "המחלוקת היא **עד איזה גודל** חכמים פוסלים סוכה גבוהה. לרב חנן, רק בסוכה המזערית; כל סוכה גדולה ממנה כשרה."], ["h", "לרב הונא, חכמים פוסלים **מראשו ורובו ושולחנו ועד ארבע אמות**; רק סוכה **גדולה מארבע אמות** כשרה לכולם. לפי רש״י, כי בסוכה כזו יש צל סכך."]], "nodes": [{"id": "y", "type": "proof", "label": "בשלמא", "text": "רבי יאשיה: שיעור בדפנות, לא בשטח"}, {"id": "p", "type": "proof", "label": "הצעה", "text": "נחלקו בגודל המזערי של סוכה"}, {"id": "n", "type": "rejection", "label": "דחייה", "to": "p", "text": "לכולם: המזערי הוא ראשו ורובו ושולחנו"}, {"id": "c", "type": "answer", "label": "רב חנן", "to": "n", "text": "מחלוקת רק בגודל המזערי"}, {"id": "h", "type": "answer", "label": "רב הונא", "to": "n", "text": "מחלוקת עד ד׳ אמות"}], "verses": [], "widgets": [{"type": "views", "title": "סוכה גבוהה מ־20 אמה, לפי הגודל", "cols": ["גודל הסוכה", "רב חנן בר רבה", "רב הונא"], "views": [{"name": "", "rows": [["פחות מראשו ורובו ושולחנו", "פסולה בכל גובה", "פסולה בכל גובה"], ["בדיוק ראשו ורובו ושולחנו", "מחלוקת", "מחלוקת"], ["מזה ועד 4×4 אמות", "כשרה", "מחלוקת"], ["יותר מ־4×4 אמות", "כשרה", "כשרה"]]}]}], "bottom": "הוויכוח איננו על הסוכה הקטנה ביותר, אלא על הגבול שממנו גם חכמים מכשירים סוכה גבוהה.", "qs": [{"q": "למה ברור שרבי יאשיה חולק על רב הונא ורב חנן?", "a": "הוא תולה את ההכשר בדפנות שמגיעות לסכך, והם תולים אותו בשטח הסוכה."}, {"q": "מה הייתה ההצעה הראשונה, ולמה נדחתה?", "a": "שהם חלוקים בגודל המזערי של סוכה. נדחתה: אפשר שכולם מסכימים שהמזערי הוא ראשו ורובו ושולחנו, והמחלוקת היא עד איזה גודל חכמים פוסלים."}, {"q": "סוכה בגובה 25 אמה וגודלה 3×3 אמות. מה דינה לכל אחד?", "a": "לרב חנן כשרה לכולם, כי היא גדולה מראשו ורובו ושולחנו; לרב הונא זו מחלוקת, ולחכמים פסולה."}], "bagrut": {"sugya": "סוגיה 3(א) בתוכנית: בירור מחלוקת חכמים ורבי יהודה (ב ע״ב)", "real": true, "exam": {"code": "5281", "name": "תורה שבעל פה (מסלול עיון)", "year": "קיץ תשפ״ג (2023)", "q": "שאלה 17, סעיף א", "url": "https://meyda.education.gov.il/files/mazkirut_pedagogit/toshbammd/528183k.pdf"}, "key": null, "text": "גובה הסוכה ונר חנוכה\nא. ״דאמר רבי יאשיה אמר רב: מחלוקת בשאין דפנות מגיעות לסכך, אבל דפנות מגיעות לסכך אפילו למעלה מעשרים אמה כשרה.״\nלפי רבי יאשיה בשם רב, באיזה מקרה חכמים מודים לרבי יהודה שסוכה הגבוהה מעשרים אמה כשרה? הסבירו את הטעם לדין זה. (3 נקודות)\n(סעיפים ב–ג בשאלון עוסקים בדברי הטור על נר חנוכה; ראו בשאלון המקורי.)", "answer": "כשהדפנות מגיעות עד הסכך. הטעם הוא כשיטת רבה: הפסול בסוכה גבוהה הוא ש״לא שלטא בה עינא״, העין לא רואה את הסכך. כשהדפנות מגיעות לסכך, העין עולה לאורכן ומגיעה לסכך (״משלט שלטא בה עינא״), ולכן גם חכמים מכשירים.", "answerSource": "own", "more": []}, "refs": ["2b:10", "2b:11", "2b:12", "2b:13"], "vilna": {"pages": [{"img": "vilna/Sukkah_2b.jpg", "amud": "2b", "w": 800, "h": 1315, "rects": [[265, 507, 240, 213]], "crop": [235, 477, 310, 273], "more": false}], "open": "בשלמא דרבי יאשיה"}, "min": 1.5}, {"id": "b4", "amud": "ב׳ ע״ב", "kind": "ברייתא", "title": "מעשה בהילני המלכה", "speakers": [["רבי יהודה", "תנא"], ["חכמים", "תנאים"]], "text": [["2b:14", "{b|מיתיבי סוכה שהיא גבוהה למעלה מעשרים אמה פסולה ורבי יהודה מכשיר עד ארבעים וחמשים אמה}"], ["2b:15", "{m|אמר רבי יהודה מעשה בהילני המלכה בלוד שהיתה סוכתה גבוהה מעשרים אמה והיו זקנים נכנסין ויוצאין לשם ולא אמרו לה דבר} {r|אמרו לו משם ראייה אשה היתה ופטורה מן הסוכה} {a|אמר להן והלא שבעה בנים הוו לה} {a2|ועוד כל מעשיה לא עשתה אלא על פי חכמים}"], ["2b:16", "{q|למה לי למיתני ועוד כל מעשיה לא עשתה אלא על פי חכמים}"], ["2b:17", "{e1|הכי קאמר להו כי תאמרו בנים קטנים היו וקטנים פטורין מן הסוכה כיון דשבעה הוו אי אפשר דלא הוי בהו חד שאינו צריך לאמו}"], ["2b:18", "{e2|וכי תימרו קטן שאינו צריך לאמו מדרבנן הוא דמיחייב ואיהי בדרבנן לא משגחה ת\"ש ועוד כל מעשיה לא עשתה אלא ע\"פ חכמים}"]], "explain": [["b", "**מיתיבי**: מקשים על האמוראים מברייתא. בה **רבי יהודה מכשיר עד ארבעים וחמישים אמה**."], ["m", "ראייתו: **הילני המלכה** בלוד ישבה בסוכה **גבוהה מעשרים אמה**, וה**זקנים** נכנסו ויצאו **ולא אמרו לה דבר**."], ["r", "חכמים: **משם ראיה?** היא **אשה**, ו**פטורה מן הסוכה**. לא היה צורך להעיר לה."], ["a", "רבי יהודה: **והלא שבעה בנים הוו לה**, והם חייבים בסוכה."], ["a2", "**ועוד**: **כל מעשיה** עשתה **על פי חכמים**."], ["q", "שאלה על הברייתא: **למה לי** ה״ועוד״? מה הוא מוסיף?"], ["e1", "אם תאמרו **בנים קטנים היו**, וקטנים פטורים: מתוך **שבעה**, לפחות אחד היה גדול מספיק ש**אינו צריך לאמו**. לפי רש״י, קטן כזה חייב בסוכה מצד חינוך."], ["e2", "ואם תאמרו שחיוב הקטן הוא **רק מדרבנן**, והיא לא הקפידה על דברי חכמים: לכן הוסיף **״ועוד, כל מעשיה על פי חכמים״**."]], "nodes": [{"id": "b", "type": "source", "label": "ברייתא", "text": "רבי יהודה מכשיר עד 40–50 אמה"}, {"id": "m", "type": "proof", "label": "הראיה", "who": "רבי יהודה", "to": "b", "text": "הזקנים לא אמרו לה דבר"}, {"id": "r", "type": "rejection", "label": "חכמים", "to": "m", "text": "אשה פטורה מן הסוכה"}, {"id": "a", "type": "answer", "label": "רבי יהודה", "to": "r", "text": "היו לה שבעה בנים"}, {"id": "a2", "type": "answer", "label": "ועוד", "to": "r", "text": "כל מעשיה על פי חכמים"}, {"id": "q", "type": "question", "label": "למה לי", "text": "מה מוסיף ה״ועוד״?"}, {"id": "e1", "type": "answer", "label": "אחד גדול", "to": "q", "text": "אחד מהם אינו צריך לאמו"}, {"id": "e2", "type": "answer", "label": "ועוד", "to": "e1", "text": "גם בחיוב דרבנן היא שמעה לחכמים"}], "verses": [], "widgets": [], "bottom": "שתיקת החכמים היא ראיה רק אם ברור שהיה להם על מה להעיר.", "discuss": "הזקנים ״לא אמרו לה דבר״. מתי שתיקה של חכמים היא ראיה, ומתי לא?", "qs": [{"q": "מה הייתה הראיה של רבי יהודה, ומה ענו לו חכמים?", "a": "הזקנים לא העירו להילני על סוכתה הגבוהה; חכמים ענו שהיא אשה ופטורה, ולכן לא היה צורך להעיר."}, {"q": "למה רבי יהודה צריך גם את ״ועוד, כל מעשיה על פי חכמים״?", "a": "כי הבנים היו כנראה קטנים, וחיובם מדרבנן; צריך להראות שגם בדרבנן היא הקפידה."}, {"q": "למה ״שבעה בנים״ חשוב לטענה?", "a": "משבעה בנים לפחות אחד היה בגיל שאינו צריך לאמו, ולכן חייב בסוכה."}], "refs": ["2b:14", "2b:15", "2b:16", "2b:17", "2b:18"], "vilna": {"pages": [{"img": "vilna/Sukkah_2b.jpg", "amud": "2b", "w": 800, "h": 1315, "rects": [[265, 705, 240, 297]], "crop": [235, 675, 310, 357], "more": false}], "open": "מיתיבי סוכה שהיא גבוהה"}, "min": 1.75}, {"id": "b5", "amud": "ב׳ ע״ב", "kind": "גמרא", "title": "איזו סוכה הייתה להילני?", "speakers": [["רבה בר רב אדא", "אמורא"]], "text": [["2b:19", "{w|בשלמא למ\"ד בשאין דפנות מגיעות לסכך מחלוקת דרכה של מלכה לישב בסוכה שאין דפנות מגיעות לסכך}"], ["3a:1", "{w2|משום אוירא} {q|אלא למאן דאמר בסוכה קטנה מחלוקת וכי דרכה של מלכה לישב בסוכה קטנה} {a|אמר רבה בר רב אדא לא נצרכה אלא לסוכה העשויה קיטוניות קיטוניות}"]], "explain": [["w", "עכשיו בודקים את האמוראים מול המעשה. **בשלמא** לרבי יאשיה, שהמחלוקת היא כשהדפנות **לא מגיעות לסכך**: כך דרכה של מלכה לשבת,"], ["w2", "**משום אוירא**: הרווח בין הדפנות לסכך מכניס רוח, ומצנן מהחום (רש״י). זו סוכה מלכותית רגילה."], ["q", "אבל לרב הונא ולרב חנן, המחלוקת היא ב**סוכה קטנה**. וכי **מלכה** יושבת בסוכה קטנה? הרי לפי רש״י נערותיה ומשרתיה הסבו עמה."], ["a", "**רבה בר רב אדא**: מדובר בסוכה **העשויה קיטוניות קיטוניות**: סוכה גדולה שמחולקת לחדרים קטנים, וכל חדר קטן מהשיעור."]], "nodes": [{"id": "w", "type": "proof", "label": "בשלמא", "text": "דפנות לא מגיעות לסכך: דרך מלכים"}, {"id": "w2", "type": "proof", "label": "הטעם", "to": "w", "text": "משום אוירא: רוח מצננת"}, {"id": "q", "type": "kushya", "label": "קושיה", "text": "וכי מלכה יושבת בסוכה קטנה?"}, {"id": "a", "type": "answer", "label": "רבה בר רב אדא", "to": "q", "text": "סוכה מחולקת לחדרים קטנים"}], "verses": [], "widgets": [{"type": "figure", "title": "איזו סוכה הייתה להילני? (מבט מלמעלה)", "svg": "<svg viewBox=\"0 0 440 236\" role=\"img\" aria-label=\"שתי צורות של סוכה עם חדרים קטנים, במבט מלמעלה\"><g opacity=\"1\"><text x=\"325\" y=\"20\" fill=\"var(--t-answer)\" font-size=\"13\" font-weight=\"700\" text-anchor=\"middle\" direction=\"rtl\">רבה בר רב אדא</text><rect x=\"250\" y=\"34\" width=\"150\" height=\"130\" fill=\"var(--sch)\" fill-opacity=\".12\" stroke=\"var(--ink)\" stroke-width=\"2\"/><path d=\"M325 34 V164 M250 99 H400\" stroke=\"var(--ink)\" stroke-width=\"1.4\"/><circle cx=\"362\" cy=\"66\" r=\"4.2\" fill=\"var(--t-scene)\"/><circle cx=\"287\" cy=\"66\" r=\"4.2\" fill=\"var(--ink)\"/><circle cx=\"287\" cy=\"131\" r=\"4.2\" fill=\"var(--ink)\"/><circle cx=\"362\" cy=\"131\" r=\"4.2\" fill=\"var(--ink)\"/><text x=\"325\" y=\"186\" fill=\"var(--ink)\" font-size=\"12.5\" font-weight=\"700\" text-anchor=\"middle\" direction=\"rtl\">״קיטוניות קיטוניות״</text><text x=\"325\" y=\"204\" fill=\"var(--muted)\" font-size=\"12\" font-weight=\"400\" text-anchor=\"middle\" direction=\"rtl\">כל הסוכה חדרים קטנים</text></g><g opacity=\".35\"><text x=\"115\" y=\"20\" fill=\"var(--t-answer)\" font-size=\"13\" font-weight=\"700\" text-anchor=\"middle\" direction=\"rtl\">רב אשי</text><rect x=\"40\" y=\"34\" width=\"150\" height=\"130\" fill=\"var(--sch)\" fill-opacity=\".12\" stroke=\"var(--ink)\" stroke-width=\"2\"/><rect x=\"140\" y=\"34\" width=\"50\" height=\"50\" fill=\"var(--t-scene)\" fill-opacity=\".14\" stroke=\"var(--ink)\" stroke-width=\"1.4\"/><circle cx=\"165\" cy=\"59\" r=\"4.2\" fill=\"var(--t-scene)\"/><circle cx=\"62\" cy=\"112\" r=\"4.2\" fill=\"var(--ink)\"/><circle cx=\"84\" cy=\"112\" r=\"4.2\" fill=\"var(--ink)\"/><circle cx=\"106\" cy=\"112\" r=\"4.2\" fill=\"var(--ink)\"/><circle cx=\"128\" cy=\"112\" r=\"4.2\" fill=\"var(--ink)\"/><circle cx=\"62\" cy=\"136\" r=\"4.2\" fill=\"var(--ink)\"/><circle cx=\"84\" cy=\"136\" r=\"4.2\" fill=\"var(--ink)\"/><circle cx=\"106\" cy=\"136\" r=\"4.2\" fill=\"var(--ink)\"/><text x=\"115\" y=\"186\" fill=\"var(--ink)\" font-size=\"12.5\" font-weight=\"700\" text-anchor=\"middle\" direction=\"rtl\">״קיטוניות שבה״</text><text x=\"115\" y=\"204\" fill=\"var(--muted)\" font-size=\"12\" font-weight=\"400\" text-anchor=\"middle\" direction=\"rtl\">סוכה גדולה, וחדר קטן בתוכה</text></g><circle cx=\"150\" cy=\"226\" r=\"4.2\" fill=\"var(--t-scene)\"/><text x=\"140\" y=\"230\" fill=\"var(--muted)\" font-size=\"11.5\" font-weight=\"400\" text-anchor=\"start\" direction=\"rtl\">הילני</text><circle cx=\"290\" cy=\"226\" r=\"4.2\" fill=\"var(--ink)\"/><text x=\"280\" y=\"230\" fill=\"var(--muted)\" font-size=\"11.5\" font-weight=\"400\" text-anchor=\"start\" direction=\"rtl\">הבנים / בני הבית</text></svg>", "note": "שרטוט סכמטי, לא בקנה מידה. לפי הגמרא, רש״י ושטיינזלץ. מיקום הבנים בציור הימני להמחשה בלבד."}], "bottom": "כל הסבר במחלוקת צריך להסביר גם איך ישבה מלכה בסוכה כזו.", "qs": [{"q": "למה לפי רבי יאשיה אין קושי בסוכת הילני?", "a": "דרכה של מלכה לשבת בסוכה שהדפנות לא מגיעות לסכך, כדי שתיכנס רוח; זו בדיוק הסוכה שבה נחלקו."}, {"q": "מה הקושי לפי רב הונא ורב חנן?", "a": "לפיהם נחלקו בסוכה קטנה, ומלכה עם משרתיה לא יושבת בסוכה קטנה."}], "refs": ["2b:19", "3a:1"], "vilna": {"pages": [{"img": "vilna/Sukkah_2b.jpg", "amud": "2b", "w": 800, "h": 1315, "rects": [[265, 987, 240, 48]], "crop": [235, 957, 310, 108], "more": false}, {"img": "vilna/Sukkah_3a.jpg", "amud": "3a", "w": 800, "h": 1315, "rects": [[285, 161, 258, 65]], "crop": [255, 131, 328, 125], "more": false}], "open": "בשלמא למ״ד בשאין דפנות"}, "min": 1}, {"id": "b6", "amud": "ג׳ ע״א", "kind": "גמרא", "title": "רב אשי: ״קיטוניות שבה״", "speakers": [["רב אשי", "אמורא בבל"], ["רבנן", "תנאים"], ["רבי יהודה", "תנא"]], "text": [["3a:2", "{q|וכי דרכה של מלכה לישב בסוכה העשויה קיטוניות קיטוניות} {a|אמר רב אשי לא נצרכה אלא לקיטוניות שבה}"], ["3a:3", "{rb|רבנן סברי בניה בסוכה מעליא הוו יתבי ואיהי יתבה בקיטוניות משום צניעותא ומשום הכי לא אמרי לה דבר} {ry|ור' יהודה סבר בניה גבה הוו יתבי ואפ\"ה לא אמרי לה דבר}"]], "explain": [["q", "שוב: **וכי מלכה יושבת בסוכה שמחולקת כולה לחדרים קטנים**, בלי מקום לשבת עם בני ביתה?"], ["a", "**רב אשי**: הסוכה הייתה **גדולה**, והיו **בה** גם חדרים קטנים: **קיטוניות שבה**. לפי רש״י התירוץ הזה מתאים לשיטת רב הונא; תוספות מסבירים שגם לרב חנן."], ["rb", "**רבנן**: **הבנים** ישבו בסוכה הגדולה, **הכשרה**, והילני ישבה בחדר הקטן **משום צניעות**. היא פטורה, ולכן **לא אמרו לה דבר**."], ["ry", "**רבי יהודה**: **הבנים ישבו איתה** בחדר הקטן, ובכל זאת **לא אמרו לה דבר**. מכאן שגם סוכה קטנה וגבוהה כשרה."]], "nodes": [{"id": "q", "type": "kushya", "label": "קושיה", "text": "מלכה בסוכה שכולה חדרים קטנים?"}, {"id": "a", "type": "answer", "label": "רב אשי", "to": "q", "text": "סוכה גדולה וחדר קטן בתוכה"}, {"id": "rb", "type": "source", "label": "רבנן", "text": "הבנים בסוכה הגדולה, היא בחדר הקטן"}, {"id": "ry", "type": "source", "label": "רבי יהודה", "to": "rb", "text": "הבנים איתה בחדר הקטן"}], "verses": [], "widgets": [{"type": "figure", "title": "איזו סוכה הייתה להילני? (מבט מלמעלה)", "svg": "<svg viewBox=\"0 0 440 236\" role=\"img\" aria-label=\"שתי צורות של סוכה עם חדרים קטנים, במבט מלמעלה\"><g opacity=\".35\"><text x=\"325\" y=\"20\" fill=\"var(--t-answer)\" font-size=\"13\" font-weight=\"700\" text-anchor=\"middle\" direction=\"rtl\">רבה בר רב אדא</text><rect x=\"250\" y=\"34\" width=\"150\" height=\"130\" fill=\"var(--sch)\" fill-opacity=\".12\" stroke=\"var(--ink)\" stroke-width=\"2\"/><path d=\"M325 34 V164 M250 99 H400\" stroke=\"var(--ink)\" stroke-width=\"1.4\"/><circle cx=\"362\" cy=\"66\" r=\"4.2\" fill=\"var(--t-scene)\"/><circle cx=\"287\" cy=\"66\" r=\"4.2\" fill=\"var(--ink)\"/><circle cx=\"287\" cy=\"131\" r=\"4.2\" fill=\"var(--ink)\"/><circle cx=\"362\" cy=\"131\" r=\"4.2\" fill=\"var(--ink)\"/><text x=\"325\" y=\"186\" fill=\"var(--ink)\" font-size=\"12.5\" font-weight=\"700\" text-anchor=\"middle\" direction=\"rtl\">״קיטוניות קיטוניות״</text><text x=\"325\" y=\"204\" fill=\"var(--muted)\" font-size=\"12\" font-weight=\"400\" text-anchor=\"middle\" direction=\"rtl\">כל הסוכה חדרים קטנים</text></g><g opacity=\"1\"><text x=\"115\" y=\"20\" fill=\"var(--t-answer)\" font-size=\"13\" font-weight=\"700\" text-anchor=\"middle\" direction=\"rtl\">רב אשי</text><rect x=\"40\" y=\"34\" width=\"150\" height=\"130\" fill=\"var(--sch)\" fill-opacity=\".12\" stroke=\"var(--ink)\" stroke-width=\"2\"/><rect x=\"140\" y=\"34\" width=\"50\" height=\"50\" fill=\"var(--t-scene)\" fill-opacity=\".14\" stroke=\"var(--ink)\" stroke-width=\"1.4\"/><circle cx=\"165\" cy=\"59\" r=\"4.2\" fill=\"var(--t-scene)\"/><circle cx=\"62\" cy=\"112\" r=\"4.2\" fill=\"var(--ink)\"/><circle cx=\"84\" cy=\"112\" r=\"4.2\" fill=\"var(--ink)\"/><circle cx=\"106\" cy=\"112\" r=\"4.2\" fill=\"var(--ink)\"/><circle cx=\"128\" cy=\"112\" r=\"4.2\" fill=\"var(--ink)\"/><circle cx=\"62\" cy=\"136\" r=\"4.2\" fill=\"var(--ink)\"/><circle cx=\"84\" cy=\"136\" r=\"4.2\" fill=\"var(--ink)\"/><circle cx=\"106\" cy=\"136\" r=\"4.2\" fill=\"var(--ink)\"/><text x=\"115\" y=\"186\" fill=\"var(--ink)\" font-size=\"12.5\" font-weight=\"700\" text-anchor=\"middle\" direction=\"rtl\">״קיטוניות שבה״</text><text x=\"115\" y=\"204\" fill=\"var(--muted)\" font-size=\"12\" font-weight=\"400\" text-anchor=\"middle\" direction=\"rtl\">סוכה גדולה, וחדר קטן בתוכה</text></g><circle cx=\"150\" cy=\"226\" r=\"4.2\" fill=\"var(--t-scene)\"/><text x=\"140\" y=\"230\" fill=\"var(--muted)\" font-size=\"11.5\" font-weight=\"400\" text-anchor=\"start\" direction=\"rtl\">הילני</text><circle cx=\"290\" cy=\"226\" r=\"4.2\" fill=\"var(--ink)\"/><text x=\"280\" y=\"230\" fill=\"var(--muted)\" font-size=\"11.5\" font-weight=\"400\" text-anchor=\"start\" direction=\"rtl\">הבנים / בני הבית</text></svg>", "note": "שרטוט סכמטי, לא בקנה מידה. לפי הגמרא, רש״י ושטיינזלץ. מיקום הבנים בציור הימני להמחשה בלבד."}, {"type": "views", "title": "אותו מעשה, שתי קריאות", "cols": ["", "איפה ישבו הבנים", "מה מוכח"], "views": [{"name": "", "rows": [["רבנן", "בסוכה הגדולה והכשרה", "כלום: היא פטורה"], ["רבי יהודה", "איתה בחדר הקטן", "סוכה קטנה וגבוהה כשרה"]]}]}], "bottom": "אותו מעשה, שתי קריאות: איפה ישבו הבנים קובע מה אפשר ללמוד ממנו.", "qs": [{"q": "מה ההבדל בין ״קיטוניות קיטוניות״ לבין ״קיטוניות שבה״?", "a": "בראשון כל הסוכה מחולקת לחדרים קטנים; בשני זו סוכה גדולה ובתוכה חדר קטן."}, {"q": "לפי רבנן, למה הזקנים לא העירו להילני?", "a": "הבנים ישבו בחלק הגדול והכשר, והיא, הפטורה, ישבה בחדר הקטן; לא היה על מה להעיר."}, {"q": "מה צריך להניח כדי שהמעשה יוכיח כרבי יהודה?", "a": "שהבנים, החייבים בסוכה, ישבו עם אמם בחדר הקטן והגבוה, ובכל זאת לא אמרו לה דבר."}], "bagrut": {"sugya": "סוגיה 3(ב) בתוכנית: סיפור הילני המלכה (ב ע״ב – ג ע״א)", "real": false, "exam": null, "key": null, "text": "״אמר רבי יהודה: מעשה בהילני המלכה בלוד, שהיתה סוכתה גבוהה מעשרים אמה, והיו זקנים נכנסין ויוצאין לשם ולא אמרו לה דבר.״\nא. (1) מה ביקש רבי יהודה להוכיח מן המעשה, ומה השיבו לו חכמים?\n(2) הסבירו מדוע הוסיף רבי יהודה ״ועוד, כל מעשיה לא עשתה אלא על פי חכמים״. (6 נקודות)\nב. לפי השיטה שהמחלוקת היא בסוכה קטנה, הקשתה הגמרא: ״וכי דרכה של מלכה לישב בסוכה קטנה?״\nהסבירו את תירוצו של רב אשי, ובמה נחלקו לפיו רבנן ורבי יהודה. (6 נקודות)", "answer": "א. (1) רבי יהודה ביקש להוכיח שסוכה הגבוהה מעשרים אמה כשרה, שהרי הזקנים ראו ולא העירו. חכמים השיבו שהילני הייתה אשה, ואשה פטורה מן הסוכה, ולכן לא היה צורך להעיר לה.\n(2) אם יאמרו שבניה היו קטנים: משבעה בנים, לפחות אחד אינו צריך לאמו, וחייב בסוכה מדרבנן (חינוך). ואם יאמרו שבדרבנן היא לא הקפידה: ״כל מעשיה על פי חכמים״, ולכן הקפידה גם בחיוב דרבנן.\nב. רב אשי: הסוכה הייתה גדולה, והיו בה גם חדרים קטנים (״קיטוניות שבה״). לרבנן, הבנים ישבו בסוכה הגדולה והכשרה, והיא ישבה בחדר הקטן משום צניעות; היא פטורה, ולכן לא אמרו לה דבר. לרבי יהודה, הבנים ישבו איתה בחדר הקטן, ובכל זאת לא אמרו לה דבר, ומכאן שסוכה קטנה וגבוהה כשרה.", "answerSource": "own", "more": []}, "refs": ["3a:2", "3a:3"], "vilna": {"pages": [{"img": "vilna/Sukkah_3a.jpg", "amud": "3a", "w": 800, "h": 1315, "rects": [[285, 211, 258, 131]], "crop": [255, 181, 328, 191], "more": false}], "open": "וכי דרכה של מלכה"}, "min": 1.5}]}, {"id": "suk3a", "daf": "סוכה ג׳", "book": "Sukkah", "group": "מסכת סוכה · יחידת הגבר 5291 (ניסוי)", "kind": "סוגיה 4", "bridge": "אתמול: שלוש אמירות בשם רב על סוכה גבוהה, והילני המלכה שישבה ב**קיטוניות שבה**. היום: **מה הגודל המזערי** של סוכה, ומשנה מהפרק השני: **ראשו ורובו בסוכה ושולחנו בתוך הבית**.", "pretest": [{"q": "אדם יושב בפתח הסוכה, ראשו ורובו בפנים, והשולחן בתוך הבית. יצא ידי חובה?", "options": ["כן", "לא", "מחלוקת"], "a": "מחלוקת: בית שמאי, לא יצא (שמא ימשך אחר שולחנו); בית הלל, יצא."}, {"q": "סוכה שיש בה מקום לאדם אבל לא לשולחן. כשרה?", "options": ["כן", "לא", "מחלוקת"], "a": "מחלוקת: בית שמאי פוסלין ובית הלל מכשירין; רב שמואל בר יצחק פוסק כבית שמאי."}], "quiz": [{"q": "למה רבי אבא תמה על רב שמואל בר יצחק?", "a": "הוא פסק כבית שמאי, ובדרך כלל הלכה כבית הלל."}, {"q": "למה לבית שמאי אסור לשבת בפתח והשולחן בבית?", "a": "גזירה שמא ימשך אחר שולחנו ויאכל מחוץ לסוכה."}, {"q": "למה ״מי שהיה״ מראה שמדובר בסוכה גדולה?", "a": "זו לשון על האדם ומקום ישיבתו, לא על גודל הסוכה."}, {"q": "למה שתי הברייתות סותרות?", "a": "בראשונה חכמים דורשים גם שולחן, ובשנייה מסתפקים בראשו ורובו."}, {"q": "למה ״פוסלין ומכשירין״ מראה שמדובר בסוכה קטנה?", "a": "פסול וכשר אומרים על הסוכה; על אדם אומרים יצא או לא יצא."}, {"q": "איך מתיישבת המשנה בסוף?", "a": "בתרתי פליגי: המשנה חסרה, ויש בה מקרה של סוכה גדולה ומקרה של סוכה קטנה."}], "dinim": ["**רב שמואל בר יצחק**: הלכה, סוכה צריכה להחזיק **ראשו ורובו ושולחנו**: כבית שמאי, ״ולא תזוז מינה״.", "**רב נחמן בר יצחק**: אולי נחלקו בסוכה גדולה: יושב בפתח והשולחן בבית; בית שמאי גוזרים שמא ימשך.", "**שתי ברייתות**: חכמים עם שולחן ובלי שולחן: אחת כבית שמאי ואחת כבית הלל.", "**מר זוטרא**: ״פוסלין ומכשירין״ הוא לשון על הסוכה.", "**בתרתי פליגי**, חסורי מיחסרא: בסוכה גדולה ״יצא / לא יצא״; בסוכה קטנה ״פוסלין / מכשירין״."], "reviewFrom": [{"id": "suk2b", "n": 2, "when": "אתמול"}, {"id": "suk2a", "n": 1, "when": "שלשום"}], "credits": "טקסט הגמרא: תלמוד בבלי, נוסח ויקיטקסט, דרך ספריא (CC-BY-SA). הפסוקים: ספריא. הביאור בשקפים בניסוח ובמבנה שלנו, על פי הגמרא עצמה, רש״י ותוספות (מתוך ספריא, נחלת הכלל) וביאור הרב שטיינזלץ לתלמוד הבבלי (מהדורת William Davidson, ספריא, ברישיון CC BY-NC 4.0: https://creativecommons.org/licenses/by-nc/4.0/). דברי שטיינזלץ עובדו ונוסחו מחדש, ואינם מובאים כלשונם; השימוש אינו מסחרי. להבנת הסוגיה נעזרנו גם ב״תלמוד בבלי המבואר – שפה ברורה״ (עוז והדר), ככלי עזר להבנה בלבד ולא כמקור לניסוח. נבדק מול טבלאות כולל עיון הדף (dafyomi.co.il). דף הש״ס: וילנא, דרך ספריא. תוכנית הלימודים: משרד החינוך, ״מסכת סוכה תשפ״ז, יחידת ההגבר 5291״ (meyda.education.gov.il). שאלות הבגרות בשכבת ״שאלת בגרות״: מתוך שאלוני בגרות ודגמי תשובות שפרסם משרד החינוך (©), עם קישור למקור; שאלות המסומנות ״ניסוח עצמי״ נכתבו כאן. גרסת ניסוי פרטית; מכיל קטעי שאלוני בגרות של משרד החינוך (©), להסרה. לפני כל פרסום פומבי יש להחליף את נוסח השאלות האמיתיות בקישורים ובשאלות בניסוח עצמי.", "deepen": null, "multi": false, "tree": null, "ladder": null, "timeline": null, "summaryTitle": null, "lessons": {"hadran": "sukkah", "kih": "sukah/hebcharts/su-tl-", "yt": "מסכת סוכה"}, "slides": [{"id": "c1", "amud": "ג׳ ע״א", "kind": "גמרא", "title": "רב שמואל בר יצחק: ראשו ורובו ושולחנו", "speakers": [["רב שמואל בר יצחק", "אמורא"], ["רבי אבא", "אמורא"]], "text": [["3a:4", "{h|אמר רב שמואל בר יצחק הלכה צריכה שתהא מחזקת ראשו ורובו ושולחנו} {q|א\"ל רבי אבא כמאן כב\"ש} {a|א\"ל אלא כמאן}"], ["3a:5", "{v|איכא דאמרי אמר רבי אבא דאמר לך מני א\"ל ב\"ש היא ולא תזוז מינה}"]], "explain": [["h", "**רב שמואל בר יצחק** פוסק: סוכה צריכה **להחזיק ראשו ורובו ושולחנו**: מקום לאדם ולשולחן שלו."], ["q", "**רבי אבא**: **כמאן? כבית שמאי?** בית שמאי דורשים מקום גם לשולחן; לבית הלל מספיק ראשו ורובו (רש״י). ובדרך כלל הלכה כבית הלל."], ["a", "**אלא כמאן?** כן, כבית שמאי, וכך ההלכה כאן."], ["v", "**איכא דאמרי**: רבי אבא שאל ״מי אמר לך?״, וענה לו: **בית שמאי היא, ולא תזוז מינה**: אל תזוז ממנה. בשני הנוסחים ההלכה כבית שמאי, ובשניהם מניחים שבית שמאי ובית הלל נחלקו בגודל הסוכה."]], "nodes": [{"id": "h", "type": "conclusion", "label": "הלכה", "who": "רב שמואל בר יצחק", "text": "סוכה צריכה להחזיק ראשו ורובו ושולחנו"}, {"id": "q", "type": "kushya", "label": "רבי אבא", "to": "h", "text": "כבית שמאי?"}, {"id": "a", "type": "answer", "label": "אלא כמאן", "to": "q", "text": "כן, כבית שמאי"}, {"id": "v", "type": "source", "label": "איכא דאמרי", "to": "q", "text": "״בית שמאי היא, ולא תזוז מינה״"}], "verses": [], "widgets": [], "bottom": "הלכה כבית שמאי, במקרה נדיר, ומשם יוצאת ההנחה שהם חלוקים בגודל הסוכה.", "qs": [{"q": "למה רבי אבא מופתע מהפסק?", "a": "כי הוא כבית שמאי, ובדרך כלל הלכה כבית הלל."}, {"q": "מה משותף לשני הנוסחים (״איכא דאמרי״)?", "a": "בשניהם הפסק הוא כבית שמאי, ובשניהם מניחים שבית שמאי ובית הלל נחלקו בגודל הסוכה."}], "refs": ["3a:4", "3a:5"], "vilna": {"pages": [{"img": "vilna/Sukkah_3a.jpg", "amud": "3a", "w": 800, "h": 1315, "rects": [[285, 327, 258, 97]], "crop": [255, 297, 328, 157], "more": false}], "open": "אמר רב שמואל בר יצחק"}, "min": 1.25}, {"id": "c2", "amud": "ג׳ ע״א", "kind": "גמרא", "title": "רב נחמן בר יצחק: אולי בסוכה גדולה", "speakers": [["רב נחמן בר יצחק", "אמורא בבל"], ["בית שמאי", "תנאים"], ["בית הלל", "תנאים"]], "text": [["3a:6", "{k|מתקיף לה רב נחמן בר יצחק ממאי דב\"ש ובית הלל בסוכה קטנה פליגי דלמא בסוכה גדולה פליגי} {c|וכגון דיתיב אפומא דמטולתא ושולחנו בתוך הבית} {bs|דבית שמאי סברי גזרינן שמא ימשך אחר שולחנו} {bh|ובית הלל סברי לא גזרינן}"], ["3a:7", "{d|ודיקא נמי דקתני מי שהיה ראשו ורובו בסוכה ושולחנו בתוך הבית ב\"ש פוסלין ובית הלל מכשירין} {d2|ואם איתא מחזקת ואינה מחזקת מיבעי ליה}"]], "explain": [["k", "**רב נחמן בר יצחק** מקשה: **ממאי** שנחלקו ב**סוכה קטנה**? אולי נחלקו ב**סוכה גדולה**."], ["c", "המקרה: אדם **יושב אפומא דמטולתא**, בפתח הסוכה, ראשו ורובו בפנים, ו**שולחנו בתוך הבית**."], ["bs", "**בית שמאי**: **גוזרים** שמא **יימשך אחרי שולחנו** ויאכל מחוץ לסוכה. לכן לא יצא."], ["bh", "**בית הלל**: **לא גוזרים**."], ["d", "**ודיקא נמי**: כך משמע גם מלשון המשנה: **״מי שהיה ראשו ורובו בסוכה...״**: היא מתארת איך האדם יושב, ולא את הסוכה."], ["d2", "אילו נחלקו בגודל, היה צריך לכתוב **״מחזקת ואינה מחזקת״**."]], "nodes": [{"id": "k", "type": "kushya", "label": "רב נחמן בר יצחק", "text": "אולי נחלקו בסוכה גדולה?"}, {"id": "c", "type": "proof", "label": "המקרה", "to": "k", "text": "יושב בפתח, והשולחן בבית"}, {"id": "bs", "type": "source", "label": "בית שמאי", "to": "c", "text": "גוזרים שמא ימשך אחר שולחנו"}, {"id": "bh", "type": "source", "label": "בית הלל", "to": "bs", "text": "לא גוזרים"}, {"id": "d", "type": "proof", "label": "ודיקא נמי", "to": "k", "text": "המשנה מתארת את האדם: ״מי שהיה״"}, {"id": "d2", "type": "proof", "label": "ואם איתא", "to": "d", "text": "אחרת: ״מחזקת ואינה מחזקת״"}], "verses": [], "widgets": [{"type": "figure", "title": "שני מקרים: ״מי שהיה״ ו״שאינה מחזקת״", "svg": "<svg viewBox=\"0 0 440 226\" role=\"img\" aria-label=\"סוכה גדולה עם שולחן בבית, וסוכה קטנה בלי מקום לשולחן, במבט מלמעלה\"><g opacity=\"1\"><text x=\"320\" y=\"20\" fill=\"var(--t-proof)\" font-size=\"12.5\" font-weight=\"700\" text-anchor=\"middle\" direction=\"rtl\">סוכה גדולה (רב נחמן בר יצחק)</text><rect x=\"320\" y=\"40\" width=\"96\" height=\"110\" fill=\"var(--sch)\" fill-opacity=\".14\" stroke=\"var(--ink)\" stroke-width=\"2\"/><rect x=\"226\" y=\"40\" width=\"94\" height=\"110\" fill=\"var(--line)\" fill-opacity=\".5\" stroke=\"var(--ink)\" stroke-width=\"2\"/><path d=\"M320 82 V108\" stroke=\"var(--surface)\" stroke-width=\"4\"/><ellipse cx=\"342\" cy=\"95\" rx=\"22\" ry=\"7\" fill=\"var(--t-scene)\" fill-opacity=\".35\" stroke=\"var(--t-scene)\"/><circle cx=\"360\" cy=\"95\" r=\"6\" fill=\"var(--t-scene)\"/><rect x=\"282\" y=\"83\" width=\"26\" height=\"24\" rx=\"3\" fill=\"var(--t-verse)\" fill-opacity=\".35\" stroke=\"var(--t-verse)\"/><text x=\"368\" y=\"64\" fill=\"var(--sch)\" font-size=\"12\" font-weight=\"700\" text-anchor=\"middle\" direction=\"rtl\">סוכה</text><text x=\"273\" y=\"64\" fill=\"var(--muted)\" font-size=\"12\" font-weight=\"700\" text-anchor=\"middle\" direction=\"rtl\">בית</text><text x=\"295\" y=\"128\" fill=\"var(--t-verse)\" font-size=\"11\" font-weight=\"400\" text-anchor=\"middle\" direction=\"rtl\">שולחן</text><text x=\"320\" y=\"172\" fill=\"var(--ink)\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\" direction=\"rtl\">ראשו ורובו בפנים, בפתח</text><text x=\"320\" y=\"190\" fill=\"var(--ink)\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\" direction=\"rtl\">והשולחן בבית</text></g><g opacity=\".35\"><text x=\"105\" y=\"20\" fill=\"var(--t-proof)\" font-size=\"12.5\" font-weight=\"700\" text-anchor=\"middle\" direction=\"rtl\">סוכה קטנה (מר זוטרא)</text><rect x=\"62\" y=\"70\" width=\"64\" height=\"50\" fill=\"var(--sch)\" fill-opacity=\".14\" stroke=\"var(--ink)\" stroke-width=\"2\"/><ellipse cx=\"94\" cy=\"95\" rx=\"22\" ry=\"7\" fill=\"var(--t-scene)\" fill-opacity=\".35\" stroke=\"var(--t-scene)\"/><circle cx=\"112\" cy=\"95\" r=\"6\" fill=\"var(--t-scene)\"/><rect x=\"22\" y=\"83\" width=\"26\" height=\"24\" rx=\"3\" fill=\"var(--t-verse)\" fill-opacity=\".35\" stroke=\"var(--t-verse)\" stroke-dasharray=\"3 2\"/><text x=\"35\" y=\"128\" fill=\"var(--t-verse)\" font-size=\"11\" font-weight=\"400\" text-anchor=\"middle\" direction=\"rtl\">אין מקום</text><text x=\"105\" y=\"172\" fill=\"var(--ink)\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\" direction=\"rtl\">הסוכה מחזקת רק</text><text x=\"105\" y=\"190\" fill=\"var(--ink)\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\" direction=\"rtl\">ראשו ורובו</text></g><text x=\"220\" y=\"216\" fill=\"var(--muted)\" font-size=\"11.5\" font-weight=\"400\" text-anchor=\"middle\" direction=\"rtl\">אדם מסב: ראש ורוב הגוף (רש״י: אכלו בהסבה)</text></svg>", "note": "שרטוט סכמטי, לא בקנה מידה, במבט מלמעלה. לפי הגמרא, רש״י ושטיינזלץ."}], "bottom": "אותה משנה יכולה לדבר על מקום הישיבה או על גודל הסוכה; הלשון מכריעה.", "qs": [{"q": "מה החשש של בית שמאי, לפי רב נחמן בר יצחק?", "a": "שאדם שיושב בפתח והשולחן בבית יימשך אחרי השולחן ויאכל מחוץ לסוכה."}, {"q": "איזו מילה במשנה תומכת בהסבר שלו?", "a": "״מי שהיה ראשו ורובו״: תיאור של האדם ולא של הסוכה; על גודל היו אומרים ״מחזקת ואינה מחזקת״."}], "refs": ["3a:6", "3a:7"], "vilna": {"pages": [{"img": "vilna/Sukkah_3a.jpg", "amud": "3a", "w": 800, "h": 1315, "rects": [[285, 409, 258, 164]], "crop": [255, 379, 328, 224], "more": false}], "open": "מתקיף לה רב נחמן בר יצחק"}, "min": 1.5}, {"id": "c3", "amud": "ג׳ ע״א", "kind": "ברייתא", "title": "שתי ברייתות: ובסוכה קטנה לא נחלקו?", "speakers": [["רבי", "תנא"], ["חכמים", "תנאים"]], "text": [["3a:8", "{k|ובסוכה קטנה לא פליגי} {b1|והתניא מחזקת ראשו ורובו ושולחנו כשרה רבי אומר עד שיהא בה ארבע אמות על ארבע אמות}"], ["3a:9", "{b2|ותניא אידך רבי אומר כל סוכה שאין בה ארבע אמות על ארבע אמות פסולה וחכ\"א אפילו אינה מחזקת אלא ראשו ורובו כשרה} {x|ואילו שולחנו לא קתני קשיין אהדדי} {c|אלא לאו ש\"מ הא ב\"ש הא ב\"ה}"]], "explain": [["k", "קושיה על רב נחמן בר יצחק: **ובסוכה קטנה לא נחלקו?**"], ["b1", "**ברייתא א׳**: סוכה ש**מחזקת ראשו ורובו ושולחנו** כשרה. **רבי** אומר: צריך **ארבע על ארבע אמות**."], ["b2", "**ברייתא ב׳**: **רבי** פוסל פחות מארבע על ארבע. **וחכמים**: **אפילו ראשו ורובו** בלבד, כשרה."], ["x", "בברייתא השנייה **שולחנו לא נזכר**. אז מה דעת חכמים: עם שולחן או בלי? **הברייתות סותרות זו את זו**."], ["c", "**אלא**: ברייתא אחת כ**בית שמאי** (צריך גם שולחן), והשנייה כ**בית הלל** (מספיק ראשו ורובו). הרי שבית שמאי ובית הלל **כן נחלקו בגודל הסוכה**."]], "nodes": [{"id": "k", "type": "kushya", "label": "קושיה", "text": "ובסוכה קטנה לא נחלקו?"}, {"id": "b1", "type": "source", "label": "ברייתא א׳", "to": "k", "text": "חכמים: ראשו ורובו ושולחנו; רבי: ד׳ אמות"}, {"id": "b2", "type": "source", "label": "ברייתא ב׳", "to": "k", "text": "חכמים: אפילו ראשו ורובו בלבד"}, {"id": "x", "type": "kushya", "label": "קשיין אהדדי", "to": "b2", "text": "שתי שיטות לחכמים"}, {"id": "c", "type": "answer", "label": "אלא", "to": "x", "text": "אחת כבית שמאי, ואחת כבית הלל"}], "verses": [], "widgets": [{"type": "views", "title": "שתי הברייתות", "cols": ["", "ברייתא א׳", "ברייתא ב׳"], "views": [{"name": "", "rows": [["רבי", "4×4 אמות", "4×4 אמות"], ["חכמים", "ראשו ורובו ושולחנו", "ראשו ורובו בלבד"], ["כשיטת", "בית שמאי", "בית הלל"]]}]}], "bottom": "שתי ברייתות שסותרות זו את זו מתיישבות כשמגלים מאחוריהן את בית שמאי ובית הלל.", "qs": [{"q": "מה בדיוק הסתירה בין הברייתות?", "a": "לפי אחת, חכמים דורשים גם מקום לשולחן; לפי השנייה, חכמים מסתפקים בראשו ורובו."}, {"q": "איך הסתירה מוכיחה שבית שמאי ובית הלל נחלקו בסוכה קטנה?", "a": "הדרך ליישב היא שכל ברייתא הולכת לשיטה אחרת, וזו בדיוק מחלוקת בגודל הסוכה."}], "refs": ["3a:8", "3a:9"], "vilna": {"pages": [{"img": "vilna/Sukkah_3a.jpg", "amud": "3a", "w": 800, "h": 1315, "rects": [[285, 558, 258, 131]], "crop": [255, 528, 328, 191], "more": false}], "open": "ובסוכה קטנה לא פליגי"}, "min": 1.25}, {"id": "c4", "amud": "ג׳ ע״א", "kind": "גמרא", "title": "מר זוטרא: ״פוסלין ומכשירין״", "speakers": [["מר זוטרא", "אמורא בבל"]], "text": [["3a:10", "{d|אמר מר זוטרא מתניתין נמי דיקא מדקתני ב\"ש פוסלין וב\"ה מכשירין} {d2|ואם איתא בש\"א לא יצא וב\"ה אומרים יצא מיבעי ליה}"]], "explain": [["d", "**מר זוטרא**: גם **המשנה עצמה** מוכיחה שמדובר בגודל הסוכה: היא אומרת **״פוסלין״ ו״מכשירין״**, ואלה מילים שנאמרות על **סוכה**."], ["d2", "אילו המחלוקת הייתה על אדם שיושב בפתח, היה צריך לכתוב **״לא יצא״ ו״יצא״**: לשון שנאמרת על **אדם**."]], "nodes": [{"id": "d", "type": "proof", "label": "מר זוטרא", "text": "״פוסלין ומכשירין״: לשון על הסוכה"}, {"id": "d2", "type": "proof", "label": "ואם איתא", "to": "d", "text": "על אדם: ״יצא / לא יצא״"}], "verses": [], "widgets": [{"type": "views", "title": "שני דיוקים מאותה משנה", "cols": ["מילה במשנה", "מתאימה ל", "מוכיחה"], "views": [{"name": "", "rows": [["״מי שהיה ראשו ורובו״", "האדם ומקום ישיבתו", "סוכה גדולה (רב נחמן)"], ["״פוסלין / מכשירין״", "הסוכה עצמה", "סוכה קטנה (מר זוטרא)"]]}]}], "bottom": "״פוסלין״ אומרים על סוכה; ״לא יצא״ אומרים על אדם.", "qs": [{"q": "למה ״פוסלין״ מתאים לסוכה ולא לאדם?", "a": "פסול הוא תכונה של החפץ, הסוכה; על אדם אומרים אם יצא ידי חובה או לא."}, {"q": "מה נשאר קשה עכשיו?", "a": "אם מדובר בגודל הסוכה, למה המשנה פותחת ב״מי שהיה ראשו ורובו״, לשון על האדם?"}], "refs": ["3a:10"], "vilna": {"pages": [{"img": "vilna/Sukkah_3a.jpg", "amud": "3a", "w": 800, "h": 1315, "rects": [[285, 674, 258, 65]], "crop": [255, 644, 328, 125], "more": false}], "open": "אמר מר זוטרא"}, "min": 0.75}, {"id": "c5", "amud": "ג׳ ע״א", "kind": "גמרא", "title": "״בתרתי פליגי״: המשנה חסרה", "speakers": [], "text": [["3a:11", "{k|ואלא קשיא מי שהיה}"], ["3a:12", "{a|לעולם בתרתי פליגי פליגי בסוכה קטנה ופליגי בסוכה גדולה} {h|וחסורי מיחסרא והכי קתני} {m1|מי שהיה ראשו ורובו בסוכה ושולחנו בתוך הבית ב\"ש אומרים לא יצא וב\"ה אומרים יצא} {m2|ושאינה מחזקת אלא כדי ראשו ורובו בלבד ב\"ש פוסלין ובית הלל מכשירין}"]], "explain": [["k", "**ואלא קשיא ״מי שהיה״**: הלשון הזו מדברת על האדם."], ["a", "**לעולם בתרתי פליגי**: בית שמאי ובית הלל נחלקו **בשני** דברים: **בסוכה קטנה** וגם **בסוכה גדולה**."], ["h", "**חסורי מיחסרא**: חסרות מילים במשנה, **והכי קתני**: וכך יש לקרוא אותה:"], ["m1", "מקרה א׳, **סוכה גדולה**: **ראשו ורובו בסוכה ושולחנו בבית**: בית שמאי, **לא יצא**; בית הלל, **יצא**."], ["m2", "מקרה ב׳, **סוכה קטנה**: **מחזקת רק ראשו ורובו**: בית שמאי **פוסלין**, בית הלל **מכשירין**. כך כל לשון במשנה במקומה."]], "nodes": [{"id": "k", "type": "kushya", "label": "קשיא", "text": "ומה עם ״מי שהיה״?"}, {"id": "a", "type": "answer", "label": "לעולם", "to": "k", "text": "נחלקו בשני דברים"}, {"id": "h", "type": "answer", "label": "חסורי מיחסרא", "to": "a", "text": "כך יש לקרוא את המשנה"}, {"id": "m1", "type": "conclusion", "label": "סוכה גדולה", "to": "h", "text": "שולחן בבית: ב״ש לא יצא, ב״ה יצא"}, {"id": "m2", "type": "conclusion", "label": "סוכה קטנה", "to": "h", "text": "רק ראשו ורובו: ב״ש פוסלין, ב״ה מכשירין"}], "verses": [], "widgets": [{"type": "views", "title": "המשנה לפי ״חסורי מיחסרא״ (✓ = יצא / כשרה)", "cols": ["", "בית שמאי", "בית הלל"], "views": [{"name": "", "rows": [["סוכה גדולה, יושב בפתח והשולחן בבית", "✗", "✓"], ["סוכה שמחזקת רק ראשו ורובו", "✗", "✓"]]}]}, {"type": "figure", "title": "שני מקרים: ״מי שהיה״ ו״שאינה מחזקת״", "svg": "<svg viewBox=\"0 0 440 226\" role=\"img\" aria-label=\"סוכה גדולה עם שולחן בבית, וסוכה קטנה בלי מקום לשולחן, במבט מלמעלה\"><g opacity=\"1\"><text x=\"320\" y=\"20\" fill=\"var(--t-proof)\" font-size=\"12.5\" font-weight=\"700\" text-anchor=\"middle\" direction=\"rtl\">סוכה גדולה (רב נחמן בר יצחק)</text><rect x=\"320\" y=\"40\" width=\"96\" height=\"110\" fill=\"var(--sch)\" fill-opacity=\".14\" stroke=\"var(--ink)\" stroke-width=\"2\"/><rect x=\"226\" y=\"40\" width=\"94\" height=\"110\" fill=\"var(--line)\" fill-opacity=\".5\" stroke=\"var(--ink)\" stroke-width=\"2\"/><path d=\"M320 82 V108\" stroke=\"var(--surface)\" stroke-width=\"4\"/><ellipse cx=\"342\" cy=\"95\" rx=\"22\" ry=\"7\" fill=\"var(--t-scene)\" fill-opacity=\".35\" stroke=\"var(--t-scene)\"/><circle cx=\"360\" cy=\"95\" r=\"6\" fill=\"var(--t-scene)\"/><rect x=\"282\" y=\"83\" width=\"26\" height=\"24\" rx=\"3\" fill=\"var(--t-verse)\" fill-opacity=\".35\" stroke=\"var(--t-verse)\"/><text x=\"368\" y=\"64\" fill=\"var(--sch)\" font-size=\"12\" font-weight=\"700\" text-anchor=\"middle\" direction=\"rtl\">סוכה</text><text x=\"273\" y=\"64\" fill=\"var(--muted)\" font-size=\"12\" font-weight=\"700\" text-anchor=\"middle\" direction=\"rtl\">בית</text><text x=\"295\" y=\"128\" fill=\"var(--t-verse)\" font-size=\"11\" font-weight=\"400\" text-anchor=\"middle\" direction=\"rtl\">שולחן</text><text x=\"320\" y=\"172\" fill=\"var(--ink)\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\" direction=\"rtl\">ראשו ורובו בפנים, בפתח</text><text x=\"320\" y=\"190\" fill=\"var(--ink)\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\" direction=\"rtl\">והשולחן בבית</text></g><g opacity=\"1\"><text x=\"105\" y=\"20\" fill=\"var(--t-proof)\" font-size=\"12.5\" font-weight=\"700\" text-anchor=\"middle\" direction=\"rtl\">סוכה קטנה (מר זוטרא)</text><rect x=\"62\" y=\"70\" width=\"64\" height=\"50\" fill=\"var(--sch)\" fill-opacity=\".14\" stroke=\"var(--ink)\" stroke-width=\"2\"/><ellipse cx=\"94\" cy=\"95\" rx=\"22\" ry=\"7\" fill=\"var(--t-scene)\" fill-opacity=\".35\" stroke=\"var(--t-scene)\"/><circle cx=\"112\" cy=\"95\" r=\"6\" fill=\"var(--t-scene)\"/><rect x=\"22\" y=\"83\" width=\"26\" height=\"24\" rx=\"3\" fill=\"var(--t-verse)\" fill-opacity=\".35\" stroke=\"var(--t-verse)\" stroke-dasharray=\"3 2\"/><text x=\"35\" y=\"128\" fill=\"var(--t-verse)\" font-size=\"11\" font-weight=\"400\" text-anchor=\"middle\" direction=\"rtl\">אין מקום</text><text x=\"105\" y=\"172\" fill=\"var(--ink)\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\" direction=\"rtl\">הסוכה מחזקת רק</text><text x=\"105\" y=\"190\" fill=\"var(--ink)\" font-size=\"12\" font-weight=\"600\" text-anchor=\"middle\" direction=\"rtl\">ראשו ורובו</text></g><text x=\"220\" y=\"216\" fill=\"var(--muted)\" font-size=\"11.5\" font-weight=\"400\" text-anchor=\"middle\" direction=\"rtl\">אדם מסב: ראש ורוב הגוף (רש״י: אכלו בהסבה)</text></svg>", "note": "שרטוט סכמטי, לא בקנה מידה, במבט מלמעלה. לפי הגמרא, רש״י ושטיינזלץ."}], "bottom": "שתי לשונות במשנה, שני מקרים: ״יצא״ על האדם בסוכה גדולה, ״פוסלין״ על הסוכה הקטנה.", "qs": [{"q": "מה פירוש ״חסורי מיחסרא״ כאן?", "a": "במשנה חסרות כמה מילים, והגמרא משלימה אותן: שני מקרים במקום אחד."}, {"q": "איך התירוץ מסביר גם את הדיוק של רב נחמן וגם את של מר זוטרא?", "a": "״מי שהיה... יצא / לא יצא״ שייך למקרה של סוכה גדולה; ״פוסלין ומכשירין״ שייך למקרה של סוכה קטנה."}, {"q": "לפי זה, האם הפסק של רב שמואל בר יצחק עומד?", "a": "כן: בית שמאי ובית הלל נחלקו גם בגודל הסוכה, והוא פסק כבית שמאי שצריך מקום גם לשולחן."}], "bagrut": {"sugya": "סוגיה 4 בתוכנית: סוכה קטנה וגדולה (ג ע״א)", "real": true, "exam": {"code": "006281", "name": "תלמוד, מסכת סוכה", "year": "קיץ תשע״ח (2018)", "q": "שאלה 6", "url": "https://meyda.education.gov.il/files/mazkirut_pedagogit/toshbammd/628178.pdf"}, "key": {"label": "דגם התשובות הרשמי של משרד החינוך, קיץ תשע״ח", "url": "https://meyda.education.gov.il/files/mazkirut_pedagogit/toshbammd/17.6-d-006281-06-18.pdf"}, "text": "״מי שהיה ראשו ורובו בסוכה ושולחנו בתוך הבית״\nא. ״מי שהיה ראשו ורובו בסוכה ושולחנו בתוך הבית, בית שמאי פוסלין ובית הלל מכשירין.״\n(1) על פי הגמרא, יש שתי אפשרויות להסביר את המקרה שבמשנה. כתוב את שתי האפשרויות.\n(2) הסבר את הקושי שעולה מן הלשון של משנה זו לפי כל אחת מן האפשרויות. (6 נקודות)\nב. בעלי התוספות מביאים את דעת רב עמרם גאון, שפסק הלכה כבית שמאי. על פי התוספות, הסבר את הקושיה מן הגמרא במסכת ברכות (דף יא ע״א) על פסק זה. (3 נקודות)", "answer": "א. (1) אפשרות א — אדם ישב בפתח של סוכה גדולה ושולחנו היה בתוך הבית. אפשרות ב — אדם ישב בסוכה קטנה שיש בה מקום רק לראשו ורובו אבל לא לשולחנו.\n(2) הקושי באפשרות הראשונה — הלשון ״פוסלין״ ו״מכשירין״ נוגעת לדין של סוכה, אך השאלה היא אם האדם יצא ידי חובה בישיבה באופן זה או לא.\nהקושי באפשרות השנייה — הלשון ״מי שהיה...״ נוגעת לדינו של האדם, אך הדיון צריך להיות בנוגע לשאלה אם צריך שהסוכה תחזיק גם את שולחנו או לא.\nב. מהגמרא במסכת ברכות משמע שהלכה כרבי יוחנן בן החורני, שהיה יושב ראשו ורובו בסוכה ושולחנו בתוך הבית, שלא כדעת בית שמאי, ואם כן קשה על דעת רב עמרם שפסק כבית שמאי. (תוד״ה ״דאמר״)", "answerSource": "key", "more": [{"label": "6284 קיץ תשפ״ד, שאלה 2 (סוכה גדולה וסוכה קטנה, + תשובון)", "url": "https://meyda.education.gov.il/files/Pop/0files/toshba-hemed/6284sh.pdf", "key": "https://meyda.education.gov.il/files/Pop/0files/toshba-hemed/6284ans.pdf"}]}, "refs": ["3a:11", "3a:12"], "vilna": {"pages": [{"img": "vilna/Sukkah_3a.jpg", "amud": "3a", "w": 800, "h": 1315, "rects": [[285, 724, 258, 131]], "crop": [255, 694, 328, 191], "more": false}], "open": "ואלא קשיא מי שהיה"}, "min": 1.5}]}, {"id": "suk3b", "daf": "סוכה ג׳ (העשרה)", "book": "Sukkah", "group": "מסכת סוכה · יחידת הגבר 5291 (ניסוי)", "kind": "העשרה (רשות)", "bridge": "אתמול: בית שמאי ובית הלל **בתרתי פליגי**, ו**רבי** דורש סוכה של ארבע על ארבע אמות. יחידת העשרה, מחוץ לאפשרויות הלימוד של 5291: ברייתא על **בית שאין בו ארבע על ארבע אמות**. האם היא כרבי בלבד?", "pretest": [{"q": "חדר קטן של 3×3 אמות. צריך מזוזה?", "options": ["כן", "לא", "רק מדרבנן"], "a": "לא: בית שאין בו ארבע על ארבע אמות פטור ממזוזה, כי אינו נחשב ״בית״."}], "quiz": [{"q": "למה בית קטן פטור ממזוזה ומעקה?", "a": "בתורה כתוב ״בית״, ובפחות מארבע על ארבע אמות אינו בית."}, {"q": "למה הברייתא יכולה להיות גם כחכמים?", "a": "חכמים הקלו רק בסוכה, דירת עראי; בית הוא דירת קבע."}, {"q": "למה מניחים בבית קטן שיתוף ולא עירוב?", "a": "עירוב צריך מקום דירה; שיתוף מסתפק במקום כמו חצר שבמבוי."}, {"q": "למה אין לבית קטן חלק בחצר?", "a": "הוא עומד להיהרס (״למיסתר קאי״), ולכן לא צריך חצר."}], "dinim": ["**בית שאין בו ד׳ על ד׳ אמות**: פטור ממזוזה ומעקה, אינו מטמא בנגעים, אינו נחלט, ואין חוזרים עליו מעורכי המלחמה.", "**אפילו רבנן**: סוכה דירת עראי, בית דירת קבע; בבית קטן ״לא דיירי ביה אינשי״.", "**עירוב**: אין מניחים בו עירובי חצרות, אבל שיתוף מניחים.", "**עיבור עיירות**: גרוע מבורגנין. **חלוקה**: אין לו דין חצר, כי ״למיסתר קאי״.", "**ההמשך בדף (ג ע״ב)**: סוכה גבוהה שממעטים אותה בכרים וכסתות; מחוץ ליחידה."], "reviewFrom": [{"id": "suk3a", "n": 2, "when": "אתמול"}], "credits": "טקסט הגמרא: תלמוד בבלי, נוסח ויקיטקסט, דרך ספריא (CC-BY-SA). הפסוקים: ספריא. הביאור בשקפים בניסוח ובמבנה שלנו, על פי הגמרא עצמה, רש״י ותוספות (מתוך ספריא, נחלת הכלל) וביאור הרב שטיינזלץ לתלמוד הבבלי (מהדורת William Davidson, ספריא, ברישיון CC BY-NC 4.0: https://creativecommons.org/licenses/by-nc/4.0/). דברי שטיינזלץ עובדו ונוסחו מחדש, ואינם מובאים כלשונם; השימוש אינו מסחרי. להבנת הסוגיה נעזרנו גם ב״תלמוד בבלי המבואר – שפה ברורה״ (עוז והדר), ככלי עזר להבנה בלבד ולא כמקור לניסוח. נבדק מול טבלאות כולל עיון הדף (dafyomi.co.il). דף הש״ס: וילנא, דרך ספריא. תוכנית הלימודים: משרד החינוך, ״מסכת סוכה תשפ״ז, יחידת ההגבר 5291״ (meyda.education.gov.il). שאלות הבגרות בשכבת ״שאלת בגרות״: מתוך שאלוני בגרות ודגמי תשובות שפרסם משרד החינוך (©), עם קישור למקור; שאלות המסומנות ״ניסוח עצמי״ נכתבו כאן. גרסת ניסוי פרטית; מכיל קטעי שאלוני בגרות של משרד החינוך (©), להסרה. לפני כל פרסום פומבי יש להחליף את נוסח השאלות האמיתיות בקישורים ובשאלות בניסוח עצמי.", "deepen": null, "multi": true, "tree": null, "ladder": null, "timeline": null, "summaryTitle": null, "lessons": {"hadran": "sukkah", "kih": "sukah/hebcharts/su-tl-", "yt": "מסכת סוכה"}, "slides": [{"id": "d1", "amud": "ג׳ ע״א", "kind": "ברייתא", "title": "בית שאין בו ארבע אמות על ארבע אמות", "speakers": [], "text": [["3a:13", "{q|מאן תנא להא דתנו רבנן} {b|בית שאין בו ארבע אמות על ארבע אמות} {l1|פטור מן המזוזה ומן המעקה ואינו מטמא בנגעים ואינו נחלט בבתי ערי חומה}"], ["3a:14", "{l2|ואין חוזרין עליו מעורכי המלחמה ואין מערבין בו ואין משתתפין בו ואין מניחין בו עירוב}"], ["3b:1", "{l3|ואין עושין אותו עיבור בין שתי עיירות ואין האחין והשותפין חולקין בו}"]], "explain": [["q", "**מאן תנא**: כשיטת מי הברייתא הבאה?"], ["b", "הנושא: **בית קטן מארבע על ארבע אמות**. הוא לא נחשב ״בית״."], ["l1", "לכן: **פטור ממזוזה וממעקה**; **לא מיטמא בנגעים** (נגעי בתים); ו**לא נחלט** בבתי ערי חומה: מי שמכר בית כזה, הבית לא עובר לקונה לצמיתות אחרי שנה (רש״י)."], ["l2", "וגם: מי שבנה בית כזה **לא חוזר מעורכי המלחמה**; ו**אין מערבין בו, אין משתתפין בו, ואין מניחין בו עירוב** בשבת."], ["l3", "**אין עושין אותו עיבור** בין שתי עיירות, לחבר אותן לעניין תחום שבת; ו**אין האחין והשותפין חולקין בו**."]], "nodes": [{"id": "q", "type": "question", "label": "מאן תנא", "text": "כשיטת מי הברייתא?"}, {"id": "b", "type": "source", "label": "ברייתא", "text": "בית קטן מד׳ על ד׳ אמות"}, {"id": "l1", "type": "conclusion", "label": "דינים א׳", "to": "b", "text": "מזוזה, מעקה, נגעים, ערי חומה"}, {"id": "l2", "type": "conclusion", "label": "דינים ב׳", "to": "b", "text": "עורכי המלחמה, עירוב ושיתוף"}, {"id": "l3", "type": "conclusion", "label": "דינים ג׳", "to": "b", "text": "עיבור עיירות, חלוקת אחים"}], "verses": [], "widgets": [{"type": "views", "title": "הדינים והטעמים (הטעמים בג ע״ב)", "cols": ["הדין", "הטעם בגמרא"], "views": [{"name": "", "rows": [["מזוזה, מעקה, נגעים, ערי חומה, עורכי המלחמה", "״בית״ כתוב בכולם"], ["עירוב ושיתוף", "לא ראוי לדירה"], ["עיבור בין עיירות", "גרוע אפילו מבורגנין"], ["חלוקת אחים ושותפים", "אין לו דין חצר"]]}]}], "check": "בתוכנית 5291 שתי אפשרויות הלימוד מסתיימות לפני ״מאן תנא״ (ג ע״א), אבל כותרת הפרק באותו מסמך מגיעה עד ״ולא דיירי ביה אינשי״ (ג ע״ב). לברר מול המורה אם ג ע״א – ג ע״ב עד שם בחומר.", "bottom": "ארבע אמות על ארבע הן הסף שבו מבנה נעשה ״בית״.", "qs": [{"q": "מה משותף לכל הדינים ברשימה?", "a": "כולם תלויים בכך שהמבנה נחשב ״בית״ או ראוי לדירה."}, {"q": "למה השאלה ״מאן תנא״ עולה דווקא כאן?", "a": "כי רבי אמר שסוכה צריכה ארבע על ארבע אמות; אולי גם הברייתא על בית היא רק כשיטתו."}], "refs": ["3a:13", "3a:14", "3b:1"], "vilna": {"pages": [{"img": "vilna/Sukkah_3a.jpg", "amud": "3a", "w": 800, "h": 1315, "rects": [[285, 840, 258, 97]], "crop": [255, 810, 328, 157], "more": false}, {"img": "vilna/Sukkah_3b.jpg", "amud": "3b", "w": 800, "h": 1315, "rects": [[268, 150, 228, 32]], "crop": [238, 120, 298, 92], "more": false}], "open": "מאן תנא להא דתנו רבנן"}, "min": 1.5}, {"id": "d2", "amud": "ג׳ ע״ב", "kind": "גמרא", "title": "סוכה דירת עראי, בית דירת קבע", "speakers": [["רבי", "תנא"], ["רבנן", "תנאים"]], "text": [["3b:2", "{p|לימא רבי היא ולא רבנן} {a|אפילו תימא רבנן עד כאן לא קאמרי רבנן התם אלא לענין סוכה דדירת עראי היא} {c|אבל לגבי בית דדירת קבע הוא אפי' רבנן מודו דאי אית ביה ד' אמות על ד' אמות דיירי ביה אינשי ואי לא לא דיירי ביה אינשי}:"]], "explain": [["p", "**לימא רבי היא**: הצעה: הברייתא כ**רבי**, שדורש ארבע אמות בסוכה, **ולא כחכמים**, שמכשירים סוכה קטנה."], ["a", "**אפילו תימא רבנן**: חכמים הקלו רק ב**סוכה**, שהיא **דירת עראי**: לשבעה ימים מסתדרים גם במקום צר."], ["c", "**בית** הוא **דירת קבע**. בזה גם חכמים מודים: בבית של ארבע על ארבע אמות **אנשים גרים**, ובקטן ממנו **לא גרים**."]], "nodes": [{"id": "p", "type": "proof", "label": "לימא", "text": "הברייתא כרבי, לא כחכמים"}, {"id": "a", "type": "rejection", "label": "אפילו תימא רבנן", "to": "p", "text": "חכמים הקלו רק בסוכה, דירת עראי"}, {"id": "c", "type": "conclusion", "label": "בית", "to": "a", "text": "דירת קבע: צריך ד׳ על ד׳ אמות"}], "verses": [], "widgets": [], "bottom": "אותה מידה, שני מבנים: מה שמספיק לשבוע אינו מספיק לבית של כל השנה.", "qs": [{"q": "למה חכמים מקלים בגודל הסוכה ולא בגודל הבית?", "a": "סוכה היא דירת עראי לשבעה ימים; בית הוא דירת קבע, ובבית קטן מארבע אמות אנשים לא גרים."}, {"q": "איך זה מתחבר לשיטת רבא בב ע״א?", "a": "גם רבא הגדיר סוכה כדירת עראי; כאן ה״עראי״ מסביר למה מספיק בה מקום קטן."}], "refs": ["3b:2"], "vilna": {"pages": [{"img": "vilna/Sukkah_3b.jpg", "amud": "3b", "w": 800, "h": 1315, "rects": [[268, 167, 228, 113]], "crop": [238, 137, 298, 173], "more": false}], "open": "לימא רבי היא"}, "min": 1}, {"id": "d3", "amud": "ג׳ ע״ב", "kind": "גמרא", "title": "מזוזה ועירוב: למה בית קטן לא נחשב", "speakers": [], "text": [["3b:3", "{b|אמר מר פטור מן המזוזה ומן המעקה ואין מטמא בנגעים ואינו נחלט בבתי ערי חומה ואין חוזרין עליו מעורכי המלחמה מ\"ט דבית כתיב בהו בכולהו}"], ["3b:4", "{e|ואין מערבין בו ואין משתתפין בו ואין מניחין בו עירוב מ\"ט דלא חזי לדירה} {s|עירובי חצירות אין מניחין בו אבל שיתוף מניחין בו}"], ["3b:5", "{r|מ\"ט דלא גרע מחצר שבמבוי דתנן עירובי חצירות בחצר שיתופי מבוי במבוי}"], ["3b:6", "{k|והוינן בה עירובי חצירות בחצר והתנן הנותן עירובו בבית שער אכסדרה ומרפסת אינו עירוב והדר שם אינו אוסר}"], ["3b:7", "{a|אלא אימא עירובי חצירות בבית שבחצר ושיתופי מבואות בחצר שבמבוי והאי לא גרע מחצר שבמבוי}"]], "explain": [["b", "חמשת הדינים הראשונים (מזוזה, מעקה, נגעים, ערי חומה, עורכי המלחמה): **״בית״ כתוב בכולם** בתורה, ובית קטן מארבע אמות אינו ״בית״."], ["e", "עירוב ושיתוף: **לא ראוי לדירה**. **עירובי חצרות** אין מניחים בו."], ["s", "אבל **שיתוף** מבואות **מניחים בו**."], ["r", "כי הוא **לא גרוע מחצר שבמבוי**, ושנינו: **עירובי חצרות בחצר, שיתופי מבוי במבוי**."], ["k", "**והוינן בה**: ושם הקשו: עירובי חצרות **בחצר**? הרי עירוב שהונח ב**בית שער, אכסדרה ומרפסת** **אינו עירוב**: אלה לא מקומות דירה."], ["a", "**אלא אימא**: עירובי חצרות **בבית שבחצר**, ושיתופי מבואות **בחצר שבמבוי**. ובית קטן **לא גרוע מחצר**, ולכן כשר לשיתוף."]], "nodes": [{"id": "b", "type": "answer", "label": "מ״ט", "text": "״בית״ כתוב בכולם"}, {"id": "e", "type": "answer", "label": "עירוב", "text": "לא ראוי לדירה"}, {"id": "s", "type": "conclusion", "label": "אבל", "to": "e", "text": "שיתוף מניחין בו"}, {"id": "r", "type": "proof", "label": "הטעם", "to": "s", "text": "לא גרוע מחצר שבמבוי"}, {"id": "k", "type": "kushya", "label": "והוינן בה", "to": "r", "text": "עירוב בבית שער אינו עירוב"}, {"id": "a", "type": "answer", "label": "אלא אימא", "to": "k", "text": "עירוב בבית שבחצר, שיתוף בחצר שבמבוי"}], "verses": [], "widgets": [], "bottom": "עירוב צריך מקום דירה; שיתוף מסתפק במקום שמשותף לכולם.", "qs": [{"q": "למה בית קטן פטור ממזוזה?", "a": "בפסוק כתוב ״בית״, ומבנה קטן מארבע על ארבע אמות אינו נחשב בית."}, {"q": "מה ההבדל בין עירובי חצרות לשיתופי מבואות לעניין מקום ההנחה?", "a": "עירובי חצרות מניחים בבית, מקום דירה; שיתוף מבואות אפשר להניח גם בחצר שבמבוי, ובית קטן לא גרוע ממנה."}], "refs": ["3b:3", "3b:4", "3b:5", "3b:6", "3b:7"], "vilna": {"pages": [{"img": "vilna/Sukkah_3b.jpg", "amud": "3b", "w": 800, "h": 1315, "rects": [[268, 265, 228, 247]], "crop": [238, 235, 298, 307], "more": false}], "open": "אמר מר פטור מן המזוזה"}, "min": 1.75}, {"id": "d4", "amud": "ג׳ ע״ב", "kind": "גמרא", "title": "עיבור עיירות וחלוקת אחים", "speakers": [["רב הונא", "אמורא בבל"], ["רב חסדא", "אמורא בבל"]], "text": [["3b:8", "{i|ואין עושין אותו עיבור בין שתי עיירות דאפי' כבורגנין לא משוינן ליה מ\"ט בורגנין חזו למילתייהו והאי לא חזי למילתיה}"], ["3b:9", "{d|ואין האחין והשותפין חולקין בו טעמא דלית ביה ד' אמות הא אית ביה ד' אמות חולקין}"], ["3b:10", "{k|והתנן אין חולקין את החצר עד שיהא בה ארבע אמות לזה וארבע אמות לזה}"], ["3b:11", "{a|אלא אימא אין בו דין חלוקה כחצר} {h|דאמר רב הונא חצר לפי פתחיה מתחלקת} {c|ורב חסדא אמר נותן לכל פתח ופתח ארבע אמות והשאר חולקין אותו בשוה}"], ["3b:12", "{e|דהני מילי בית דלמהוי קאי יהבינא ליה חצר האי דלמיסתר קאי לא יהבינן ליה חצר:}"]], "explain": [["i", "**עיבור בין עיירות**: בית בין שתי עיירות קרובות יכול לחבר אותן לעיר אחת לעניין תחום שבת. בית קטן לא: **אפילו כבורגנין**, סוכות שמירה בשדה, הוא לא נחשב. **בורגנין** ראויים לתפקידם, והבית הקטן **לא ראוי** לדירה."], ["d", "**חלוקה**: מדייקים מהברייתא: **אין** חולקים כשאין בו ארבע אמות; **אם יש בו ארבע אמות, חולקים**?"], ["k", "**והתנן**: **אין חולקין את החצר** עד שיהיו **ארבע אמות לכל אחד**. בארבע אמות בלבד לא חולקים!"], ["a", "**אלא אימא**: הכוונה ש**אין לו דין חלוקה כחצר**: בעל בית קטן לא מקבל חלק בחצר המשותפת."], ["h", "**רב הונא**: חצר **מתחלקת לפי הפתחים** של הבתים."], ["c", "**רב חסדא**: **ארבע אמות לכל פתח**, והשאר בשווה."], ["e", "זה רק ב**בית שעומד להישאר**; בית קטן **עומד להיסתר**, להיהרס, ולכן **לא נותנים לו חצר**."]], "nodes": [{"id": "i", "type": "answer", "label": "עיבור", "text": "גרוע מבורגנין: לא ראוי לדירה"}, {"id": "d", "type": "proof", "label": "דיוק", "text": "בארבע אמות חולקין?"}, {"id": "k", "type": "kushya", "label": "והתנן", "to": "d", "text": "חצר: ד׳ אמות לכל אחד"}, {"id": "a", "type": "answer", "label": "אלא אימא", "to": "k", "text": "אין לו חלק בחצר"}, {"id": "h", "type": "source", "label": "רב הונא", "to": "a", "text": "חצר לפי פתחיה"}, {"id": "c", "type": "source", "label": "רב חסדא", "to": "h", "text": "ד׳ אמות לכל פתח"}, {"id": "e", "type": "conclusion", "label": "הטעם", "to": "a", "text": "בית קטן ״למיסתר קאי״"}], "verses": [], "widgets": [], "bottom": "מבנה שלא גרים בו, ושעומד להיהרס, אינו מקבל מעמד של בית לשום דבר.", "qs": [{"q": "למה בורגנין מצטרפים לעיר ובית קטן לא?", "a": "בורגנין ראויים לתפקיד שלהם, שמירה; בית קטן אינו ראוי לתפקידו, דירה."}, {"q": "איך הגמרא מיישבת את הסתירה לגבי חלוקה?", "a": "היא מפרשת שהברייתא מדברת על חלק בחצר: בית קטן לא מקבל חלק בחצר, כי הוא עומד להיהרס."}], "bagrut": {"sugya": "העשרה: בית שאין בו ארבע על ארבע אמות (ג ע״א – ג ע״ב)", "real": false, "exam": null, "key": null, "text": "״בית שאין בו ארבע אמות על ארבע אמות פטור מן המזוזה ומן המעקה...״\nא. (1) מדוע הציעה הגמרא שברייתא זו היא כשיטת רבי ולא כשיטת חכמים?\n(2) הסבירו כיצד דחתה הגמרא הצעה זו. (6 נקודות)\nב. ״עירובי חצירות אין מניחין בו, אבל שיתוף מניחין בו.״ הסבירו את ההבדל בין עירובי חצרות לשיתופי מבואות לעניין בית זה, ואת הטעם להבדל. (6 נקודות)", "answer": "א. (1) רבי הוא שאמר שסוכה צריכה ארבע על ארבע אמות; חכמים הכשירו סוכה קטנה יותר. לכן נראה שהברייתא, שאינה מחשיבה בית קטן מארבע אמות, הולכת כרבי.\n(2) ״אפילו תימא רבנן״: חכמים הקלו רק בסוכה, שהיא דירת עראי. בית הוא דירת קבע, ובזה גם חכמים מודים שבפחות מארבע על ארבע אמות ״לא דיירי ביה אינשי״.\nב. עירובי חצרות מניחים רק בבית שבחצר, מקום הראוי לדירה, ובית קטן אינו ראוי לדירה. שיתופי מבואות מניחים גם בחצר שבמבוי, ובית קטן ״לא גרע מחצר שבמבוי״, ולכן מניחים בו שיתוף.", "answerSource": "own", "more": []}, "refs": ["3b:8", "3b:9", "3b:10", "3b:11", "3b:12"], "vilna": {"pages": [{"img": "vilna/Sukkah_3b.jpg", "amud": "3b", "w": 800, "h": 1315, "rects": [[268, 497, 228, 229]], "crop": [238, 467, 298, 289], "more": false}], "open": "ואין עושין אותו עיבור"}, "min": 1.75}]}], "pilot": {"note": "גרסת ניסוי פרטית; מכיל קטעי שאלוני בגרות של משרד החינוך (©), להסרה.", "publicRelease": "Before any public release: replace bagrut items with real:true by exam links + own-worded questions.", "program": {"doc": "https://meyda.education.gov.il/files/Pop/0files/toshba-hemed/High-School/5291-tashpaz-suka.docx", "code": "5291", "year": "תשפ״ז"}}};
+const TYPES = {
+  source:{name:"מקור", c:"--t-source"}, question:{name:"שאלה", c:"--t-question"}, kushya:{name:"קושיא", c:"--t-kushya"},
+  proof:{name:"הצעה / ראיה", c:"--t-proof"}, answer:{name:"תירוץ / ביאור", c:"--t-answer"},
+  rejection:{name:"דחייה", c:"--t-rejection"}, conclusion:{name:"מסקנה / דין", c:"--t-conclusion"},
+  verse:{name:"פסוק", c:"--t-verse"}, place:{name:"מקום", c:"--sch"}, drasha:{name:"דרשה", c:"--t-drasha"}, scene:{name:"סצנה", c:"--t-scene"}
+};
+let DATA, S, N, DI = 0;
+const store = {
+  get(k,d){try{const v=localStorage.getItem("dafr:"+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem("dafr:"+k,JSON.stringify(v))}catch(e){}}
+};
+const dk = (k, id=DATA.id) => id+":"+k;
+const st = { i:-1, mode: store.get("mode","study"), explain: store.get("explain",true), step:0, active:null, locked:false };
+function loadDaf(k){
+  DI = Math.max(0, Math.min(LIB.library.length-1, k)); DATA = LIB.library[DI]; S = DATA.slides; N = S.length;
+  st.i = -1; st.step = 0;
+  st.times = store.get(dk("times"), null); if(!st.times || st.times.length!==N+2) st.times = new Array(N+2).fill(0);
+  st.reviewed = new Set(store.get(dk("reviewed"), []));
+  st.quiz = store.get(dk("quiz"), {}); st.pre = store.get(dk("pre"), {}); st.rev = store.get(dk("rev"), {});
+  st.revItems = buildReview();
+  store.set("daf", DATA.id);
+  $("#dafName").textContent = DATA.daf;
+  const sel = $("#dafSel"); if(sel) sel.value = String(DI);
+}
+// Spaced retrieval: questions from yesterday's daf and from a week ago. Questions missed before come first.
+function pickFrom(src, n){
+  const res = store.get(dk("quiz", src.id), {});
+  const order = src.quiz.map((q,k)=>k).sort((a,b)=>{ const p=v=>v==="no"?0:v==null?1:2; return p(res[a])-p(res[b]) || a-b; });
+  return order.slice(0,n).map(k=>({daf:src, k, q:src.quiz[k], last:res[k]}));
+}
+function buildReview(){
+  const items=[];
+  (DATA.reviewFrom||[]).forEach(r=>{ const src=LIB.library.find(d=>d.id===r.id); if(src) items.push(...pickFrom(src, r.n).map(x=>({...x, when:r.when}))); });
+  return items;
+}
+const PAUSE = {answer:"עצרו רגע: איך הגמרא תענה על זה?", rejection:"עצרו רגע: מה הבעיה בהצעה הזו?", conclusion:"עצרו רגע: מה המסקנה?", drasha:"עצרו רגע: מה אפשר לדרוש מכאן?"};
+function buildSeq(s){ const q=[]; s.nodes.forEach(n=>{ if(PAUSE[n.type] && n.to) q.push({pause:n.id, type:n.type}); q.push({node:n.id}); }); return q; }
+const $ = s => document.querySelector(s);
+const esc = s => s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const bold = s => esc(s).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
+const fmt = sec => { sec=Math.round(sec); const m=Math.floor(sec/60), s=sec%60; return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0"); };
+const sefaria = ref => { const [d,l]=ref.split(":"); return `https://www.sefaria.org/${DATA.book}.${d}.${l}?lang=he&with=Steinsaltz`; };
+const sefariaVerse = ref => `https://www.sefaria.org/${ref}?lang=he`;
+function gem(n){ const u=["","א","ב","ג","ד","ה","ו","ז","ח","ט"], te=["","י","כ","ל","מ","נ","ס","ע","פ","צ"];
+  let s = n===15?"טו":n===16?"טז":te[Math.floor(n/10)]+u[n%10];
+  return s.length>1 ? s.slice(0,-1)+"״"+s.slice(-1) : s+"׳"; }
+function refLabel(r){ const [d,l]=r.split(":"), amud=/a$/.test(d)?"ע״א":"ע״ב";
+  return (DATA.multi ? gem(parseInt(d))+" " : "")+amud+" "+l; }
+
+function depthMap(nodes){
+  const byId=Object.fromEntries(nodes.map(n=>[n.id,n])), d={};
+  const f=(n,g=0)=>{ if(d[n.id]!=null) return d[n.id]; if(!n.to||g>6) return d[n.id]=0; return d[n.id]=Math.min(3,f(byId[n.to],g+1)+1); };
+  nodes.forEach(n=>f(n)); return d;
+}
+const CITE_RE = /\((בראשית|שמות|ויקרא|במדבר|דברים|יהושע|שופטים|ישעיהו|ישעיה|ירמיהו|ירמיה|יחזקאל|הושע|יואל|עמוס|עובדיה|יונה|מיכה|נחום|חבקוק|צפניה|חגי|זכריה|מלאכי|תהלים|תהילים|משלי|איוב|רות|איכה|קהלת|אסתר|דניאל|עזרא|נחמיה)\s[^()]{1,14}\)/g;
+function renderGemara(t, typeOf, revealed){
+  return esc(t).replace(CITE_RE, m=>`<span class="cite" title="הפסוק המלא מופיע מתחת לטקסט">${m}</span>`).replace(/\{(\w+)\|([^}]*)\}/g,(m,id,txt)=>{
+    const ty=typeOf[id]; const hid = revealed && !revealed.has(id) ? " hidden-step" : "";
+    return `<span data-n="${id}" class="${hid}" style="--c:var(${TYPES[ty].c})">${txt}</span>`;
+  });
+}
+
+
+// Schematic map of Eretz Israel. Coastline, lakes and the Jordan are hand-traced approximations (lat, lon); not to survey accuracy.
+const GEO_BASE = {
+  coast:[[30,32.5],[31.13,33.8],[31.31,34.23],[31.42,34.33],[31.52,34.43],[31.67,34.55],[31.8,34.63],[32.05,34.75],[32.17,34.8],[32.33,34.85],[32.45,34.87],[32.5,34.89],[32.61,34.91],[32.69,34.93],[32.79,34.95],[32.83,34.955],[32.81,35],[32.8,35.04],[32.86,35.08],[32.92,35.07],[33.01,35.09],[33.09,35.1],[33.27,35.19],[33.4,35.26],[33.56,35.37],[33.7,35.45],[33.9,35.47],[33.98,35.62],[34.12,35.64],[34.25,35.66],[34.33,35.73],[34.45,35.8],[34.5,35.9],[34.55,35.97],[34.63,36],[34.75,36.02],[35.3,35.9]],
+  lakes:[
+    [[33.11,35.6],[33.1,35.625],[33.07,35.63],[33.05,35.615],[33.06,35.59],[33.09,35.585]],
+    [[32.885,35.6],[32.87,35.64],[32.82,35.65],[32.76,35.645],[32.71,35.62],[32.71,35.575],[32.76,35.535],[32.8,35.525],[32.85,35.54],[32.875,35.57]],
+    [[31.77,35.51],[31.76,35.56],[31.62,35.58],[31.45,35.58],[31.3,35.54],[31.15,35.5],[31.05,35.45],[31.06,35.39],[31.25,35.39],[31.46,35.39],[31.62,35.45],[31.72,35.47]]],
+  jordan:[[33.248,35.694],[33.2,35.65],[33.15,35.62],[33.11,35.61],[33.05,35.615],[32.97,35.625],[32.885,35.62],[32.8,35.59],[32.71,35.57],[32.62,35.57],[32.45,35.56],[32.25,35.55],[32.05,35.53],[31.87,35.545],[31.77,35.535]]
+};
+function renderGeo(g){
+  const [s,n,w,e]=g.bbox, c=Math.cos((s+n)/2*Math.PI/180), MW=g.mapW||270, k=MW/((e-w)*c), MH=(n-s)*k;
+  const L=g.padX||95, T=8, VW=MW+2*L, VH=MH+T+8, cid="gc"+Math.random().toString(36).slice(2,7);
+  const P=([la,lo])=>[L+(lo-w)*c*k, T+(n-la)*k], f=v=>v.toFixed(1);
+  const pts=a=>a.map(p=>P(p).map(f).join(",")).join(" ");
+  const halo='paint-order="stroke" stroke="var(--surface)" stroke-width="3.5" stroke-linejoin="round"';
+  const txt=(x,y,t,o={})=>`<text x="${f(x)}" y="${f(y)}" font-size="${o.size||12}" font-weight="${o.wt||400}" fill="${o.fill||"var(--ink)"}" text-anchor="${o.anchor||"middle"}" direction="rtl" ${o.halo===false?"":halo}${o.it?' font-style="italic"':""}>${esc(t)}</text>`;
+  const land=[...GEO_BASE.coast,[35.3,40],[30,40]];
+  let o=`<svg viewBox="0 0 ${f(VW)} ${f(VH)}" role="img" aria-label="${esc(g.title||"מפה סכמטית")}"><defs><clipPath id="${cid}"><rect x="${L}" y="${T}" width="${f(MW)}" height="${f(MH)}" rx="6"/></clipPath></defs>`;
+  o+=`<g clip-path="url(#${cid})"><rect x="${L}" y="${T}" width="${f(MW)}" height="${f(MH)}" fill="color-mix(in srgb,var(--t-proof) 13%,var(--surface))"/>`;
+  o+=`<polygon points="${pts(land)}" fill="var(--surface)" stroke="var(--muted)" stroke-width="0.9" stroke-linejoin="round"/>`;
+  o+=`<polyline points="${pts(GEO_BASE.jordan)}" fill="none" stroke="var(--t-proof)" stroke-width="1.8" stroke-linejoin="round"/>`;
+  if(g.jordanHL){ const seg=GEO_BASE.jordan.filter(p=>p[0]<=g.jordanHL.lat); seg.unshift([g.jordanHL.lat, 35.545]);
+    o+=`<polyline points="${pts(seg)}" fill="none" stroke="var(--t-conclusion)" stroke-width="5" stroke-linecap="round" opacity=".85"/>`; }
+  GEO_BASE.lakes.forEach(l=>{ o+=`<polygon points="${pts(l)}" fill="color-mix(in srgb,var(--t-proof) 13%,var(--surface))" stroke="var(--t-proof)" stroke-width="1.2"/>`; });
+  (g.areas||[]).forEach(a=>{ const [x,y]=P([a.lat,a.lon]); o+=txt(x,y,a.t,{size:11,fill:"var(--muted)",it:true,halo:false}); });
+  o+=`</g><rect x="${L}" y="${T}" width="${f(MW)}" height="${f(MH)}" rx="6" fill="none" stroke="var(--line)"/>`;
+  if(g.jordanHL){ const [x,y]=P([g.jordanHL.lat-0.05,35.56]); o+=`<line x1="${f(x+4)}" y1="${f(y)}" x2="${f(L+MW+6)}" y2="${f(y)}" stroke="var(--muted)" stroke-width=".7"/>`+txt(L+MW+8,y,g.jordanHL.label,{size:12,wt:700,fill:"var(--t-conclusion)",anchor:"end"})+(g.jordanHL.sub?txt(L+MW+8,y+13,g.jordanHL.sub,{size:10,fill:"var(--t-conclusion)",anchor:"end"}):""); }
+  (g.refs||[]).forEach(r=>{ const [x,y]=P([r.lat,r.lon]); o+=`<rect x="${f(x-2.5)}" y="${f(y-2.5)}" width="5" height="5" fill="none" stroke="var(--muted)" stroke-width="1.2"/>`+txt(r.side==="r"?x+7:x-7,y+4,r.t,{size:10.5,fill:"var(--muted)",anchor:r.side==="r"?"end":"start"}); });
+  (g.places||[]).forEach(p=>{ const [x,y]=P([p.lat,p.lon]), r=p.side==="r", dx=p.dx||0, dy=p.dy||0;
+    const lx = r ? Math.max(x+10, L+MW+6)+dx : Math.min(x-10, L-6)+dx, ly=y+dy;
+    let mk = `<circle class="hl" cx="${f(x)}" cy="${f(y)}" r="13" fill="var(--sch)"/>`;
+    if(p.sure==="approx") mk+=`<circle cx="${f(x)}" cy="${f(y)}" r="8" fill="none" stroke="var(--sch)" stroke-width="1.6" stroke-dasharray="2.5 2"/><circle cx="${f(x)}" cy="${f(y)}" r="2" fill="var(--sch)"/>`;
+    else if(p.sure==="res") mk+=`<circle cx="${f(x)}" cy="${f(y)}" r="7" fill="none" stroke="var(--sch)" stroke-width="1.5"/><circle cx="${f(x)}" cy="${f(y)}" r="3.6" fill="var(--sch)"/>`;
+    else mk+=`<circle cx="${f(x)}" cy="${f(y)}" r="4.6" fill="var(--sch)" stroke="var(--surface)" stroke-width="1.2"/>`;
+    o+=`<g class="gp" data-n="${p.id}" tabindex="0" role="button" aria-label="${esc(p.name)}">${mk}<line x1="${f(r?x+7:x-7)}" y1="${f(y)}" x2="${f(r?lx-2:lx+2)}" y2="${f(ly)}" stroke="var(--muted)" stroke-width=".7"/>`
+      + txt(lx, ly+(p.sub?0:4), p.name, {size:12.5, wt:700, anchor:r?"end":"start"})
+      + (p.sub? txt(lx, ly+13, p.sub, {size:10, fill:"var(--muted)", anchor:r?"end":"start"}) : "") + `</g>`; });
+  const km=g.scaleKm||20, sx=L+10, sy=T+MH-12, sl=km/111*k;
+  o+=`<line x1="${f(sx)}" y1="${f(sy)}" x2="${f(sx+sl)}" y2="${f(sy)}" stroke="var(--ink)" stroke-width="2"/>`+txt(sx+sl/2,sy-5,`${km} ק״מ`,{size:10});
+  o+=txt(L+20,T+16,"צפון ↑",{size:10,fill:"var(--muted)"});
+  o+=`</svg>`;
+  const leg=[["sure",'<circle cx="8" cy="8" r="4.6" fill="var(--sch)"/>',"זיהוי ודאי או לפי שטיינזלץ"],["res",'<circle cx="8" cy="8" r="6.5" fill="none" stroke="var(--sch)" stroke-width="1.5"/><circle cx="8" cy="8" r="3.4" fill="var(--sch)"/>',"זיהוי לפי המחקר"],["approx",'<circle cx="8" cy="8" r="6.5" fill="none" stroke="var(--sch)" stroke-width="1.5" stroke-dasharray="2.5 2"/>',"מיקום משוער"]]
+    .filter(([t])=>(g.places||[]).some(p=>(p.sure||"sure")===t));
+  if(g.refs&&g.refs.length) leg.push(["ref",'<rect x="5" y="5" width="6" height="6" fill="none" stroke="var(--muted)" stroke-width="1.2"/>',"להתמצאות (לא בדף)"]);
+  return `<div class="geo">${o}<div class="geo-leg">${leg.map(([,i,t])=>`<span><svg viewBox="0 0 16 16">${i}</svg>${esc(t)}</span>`).join("")}</div>`
+    + (g.unplaced&&g.unplaced.length?`<div class="geo-un">לא מסומנים במפה: ${g.unplaced.map(u=>`<b>${esc(u.name)}</b> <span>(${esc(u.note)})</span>`).join(" · ")}</div>`:"")
+    + (g.note?`<div class="wnote">${esc(g.note)}</div>`:"") + `</div>`;
+}
+
+function renderSlide(){
+  const s=S[st.i], typeOf=Object.fromEntries(s.nodes.map(n=>[n.id,n.type]));
+  const lesson = st.mode==="lesson";
+  const order = s.nodes.map(n=>n.id);
+  const seq = buildSeq(s), done = seq.slice(0,st.step);
+  const revealed = lesson ? new Set(done.filter(x=>x.node).map(x=>x.node)) : null;
+  const pauseOn = lesson && done.length && done[done.length-1].pause ? done[done.length-1] : null;
+  const d=depthMap(s.nodes), byId=Object.fromEntries(s.nodes.map(n=>[n.id,n]));
+  const usedTypes=[...new Set(s.nodes.map(n=>n.type))];
+  const refs=s.refs;
+  $("#stage").innerHTML = `
+    <div class="head">
+      <div>
+        <div class="eyebrow">${esc(DATA.daf)}${s.amud?" "+esc(s.amud):""} · ${esc(s.kind)} · שקף ${st.i+1} מתוך ${N}</div>
+        <h1>${esc(s.title)}</h1>
+        <div class="speakers">${s.speakers.map(([n,e])=>`<span class="spk">${esc(n)}<small>${esc(e)}</small></span>`).join("")}</div>
+      </div>
+      <div class="head-actions">
+        ${refs.length?`<a href="${sefaria(refs[0])}" target="_blank" rel="noopener">בספריא עם שטיינזלץ ↗</a>`:""}
+        ${DATA.deepen?`<a href="${DATA.deepen}" target="_blank" rel="noopener">להעמיק ↗</a>`:""}
+        <button class="chip-btn" id="rev" aria-pressed="${st.reviewed.has(s.id)}">${st.reviewed.has(s.id)?"✓ נבדק":"סמן כנבדק"}</button>
+      </div>
+    </div>
+    ${s.check?`<div class="check"><b>לבדיקה:</b><span>${esc(s.check)}</span></div>`:""}
+    ${DATA.tree?renderTree(st.i,true):""}
+    <div class="cols" id="cols">
+      <section class="panel">
+        <h2 class="panel-title">${s.geo?"מפה סכמטית":s.intro?"רקע":"הטקסט"}</h2>
+        ${s.geo?renderGeo(s.geo):""}
+        ${s.vilna?renderVilna(s.vilna):""}
+        ${s.intro?`<div class="paras">${s.paras.map(p=>`<p>${bold(p)}</p>`).join("")}</div>`:""}
+        <div class="gemara">${s.text.map(([r,t])=>`<div class="seg-row"><span class="ref">${esc(refLabel(r))}</span><p class="gtext">${renderGemara(t,typeOf,revealed)}</p></div>`).join("")}</div>
+        ${s.verses&&s.verses.length?`<div class="verses"><h2 class="panel-title">${s.verses.length>1?"הפסוקים במלואם":"הפסוק במלואו"}</h2>${s.verses.map(v=>renderVerse(v,typeOf,s.numbered,revealed)).join("")}</div>`:""}
+        <div class="explain" ${st.explain&&s.explain.length?"":"hidden"}>
+          <h2 class="panel-title">ביאור</h2>
+          ${s.explain.map(([n,t])=>`<p data-n="${n}" style="--c:var(${TYPES[typeOf[n]].c})" ${revealed&&!revealed.has(n)?"hidden":""}>${bold(t)}</p>`).join("")}
+        </div>
+      </section>
+      <section class="panel">
+        ${DATA.timeline && DATA.timeline.show.includes(st.i) ? renderUnitTimeline(st.i) : ""}
+        <h2 class="panel-title">${s.geo?"המקומות":s.intro?"מושגים":"המהלך"}</h2>
+        <div class="legend">${usedTypes.map(t=>`<span style="--c:var(${TYPES[t].c})"><i></i>${TYPES[t].name}</span>`).join("")}</div>
+        <div class="flow">${s.nodes.map(n=>{
+          if(pauseOn && pauseOn.pause===n.id) return `<div class="node pause" style="--d:${d[n.id]};--c:var(${TYPES[n.type].c})" data-d="${d[n.id]}"><div class="top"><span class="pill">רגע לחשוב</span></div><div class="txt">${PAUSE[n.type]}</div></div>`;
+          const pend = revealed && !revealed.has(n.id);
+          const onto = n.to && byId[n.to] && n.to!==order[order.indexOf(n.id)-1] ? `<span class="onto">← על: ${esc(byId[n.to].label)}</span>` : "";
+          return `<div class="node${pend?" pending":""}" data-n="${n.id}" data-d="${d[n.id]}" style="--d:${d[n.id]};--c:var(${TYPES[n.type].c})" tabindex="${pend?-1:0}" role="button" aria-label="${esc(n.label)}">
+            <div class="top"><span class="pill">${esc(n.label)}</span>${n.who?`<span class="who">${esc(n.who)}</span>`:""}${onto}</div>
+            <div class="txt">${esc(n.text)}</div></div>`;}).join("")}</div>
+        ${(s.widgets||[]).map(renderWidget).join("")}
+      </section>
+    </div>
+    <div class="bottomline" ${lesson&&st.step<seq.length?"hidden":""}><span class="lbl">בשורה התחתונה</span><p>${esc(s.bottom)}</p></div>
+    ${s.discuss?`<div class="discuss" ${lesson&&st.step<seq.length?"hidden":""}><span class="lbl">שאלה לחברותא</span><p>${esc(s.discuss)}</p></div>`:""}
+    ${renderDeep(s, lesson&&st.step<seq.length)}`;
+  wireWidgets();
+  wireSlide(s);
+  wireDeep(s);
+  const lastNode = lesson ? [...done].reverse().find(x=>x.node) : null;
+  if(lastNode && !pauseOn) setActive(lastNode.node, false);
+}
+
+function renderVerse(v, typeOf, numbered, revealed){
+  const c = TYPES[typeOf[v.node]||"verse"].c, hide = revealed && v.node && !revealed.has(v.node);
+  let html="", cur=0, k=0;
+  const spots=[]; v.keys.forEach((key,i)=>{ let p=v.text.indexOf(key,cur); if(p<0) p=v.text.indexOf(key); if(p>=0){ spots.push([p,p+key.length,i]); cur=p+key.length; } });
+  spots.sort((a,b)=>a[0]-b[0]); cur=0;
+  spots.forEach(([a,b,i])=>{ if(a<cur) return; html+=esc(v.text.slice(cur,a))+`<mark class="vk">${numbered?`<sup>${i+1}</sup>`:""}${esc(v.text.slice(a,b))}</mark>`; cur=b; });
+  html+=esc(v.text.slice(cur));
+  return `<div class="verse${hide?" vhide":""}" ${v.node?`data-n="${v.node}"`:""} style="--c:var(${c})">
+    <div class="vhead"><span>${esc(v.he)}</span><a href="${sefariaVerse(v.ref)}" target="_blank" rel="noopener">בספריא ↗</a></div>
+    <p class="vtext">${html}</p></div>`;
+}
+
+function renderTree(cur, compact){
+  const items = DATA.tree.map((t,k)=>`<li class="tr${t.side?" side":""}${t.slide===cur?" cur":""}${cur!=null&&t.slide<cur?" past":""}" style="--d:${t.d}"><button data-s="${t.slide}">${t.side?`<span class="tag">צד</span>`:""}${esc(t.label)}</button></li>`).join("");
+  return compact ? `<details class="where"><summary>איפה אנחנו בסוגיה</summary><ol class="tree">${items}</ol></details>`
+                 : `<ol class="tree">${items}</ol>`;
+}
+
+const WIDGET_INIT = [];
+function wireWidgets(){ while(WIDGET_INIT.length) WIDGET_INIT.shift()(); document.querySelectorAll(".tree button").forEach(b=>b.onclick=()=>go(+b.dataset.s)); }
+
+function renderTimeline(w, id){
+  const all = w.views.flatMap(v=>v.points.map(p=>p.at));
+  const lo = Math.min(0, ...all), hi = Math.max(w.axis.length-1, ...all), pct = x => 14 + (x-lo)/(hi-lo||1)*72;
+  const view = v => {
+    const pts = [...v.points].sort((a,b)=>a.at-b.at), rows=[];
+    pts.forEach(p=>{ const x=pct(p.at); let r=0; while(rows[r]!=null && Math.abs(rows[r]-x)<22) r++; rows[r]=x; p._r=r; p._x=x; });
+    const nr = Math.max(1, rows.length);
+    return `<div class="tl" style="--rows:${nr}">
+      <div class="tl-pts">${pts.map(p=>`<div class="tl-pt ${p.kind||""}${p.clash?" clash":""}" style="inset-inline-start:${p._x}%;--r:${p._r}"><b>${esc(p.who)}</b><span>${esc(p.label||"")}${p.clash?" · מתנגש!":""}</span></div>`).join("")}</div>
+      <div class="tl-axis">${w.axis.map((a,k)=>`<span class="tl-tick" style="inset-inline-start:${pct(k)}%"><i></i>${esc(a)}</span>`).join("")}</div>
+    </div>`;
+  };
+  WIDGET_INIT.push(()=>{ const root=document.getElementById(id); if(!root) return;
+    root.querySelectorAll(".wtabs button").forEach((b,k)=>b.onclick=()=>{ root.querySelectorAll(".wtabs button").forEach(x=>x.setAttribute("aria-pressed",x===b)); root.querySelector(".tl-wrap").innerHTML=view(w.views[k]); }); });
+  return `<div class="widget" id="${id}"><h3>${esc(w.title)}</h3>
+    ${w.views.length>1?`<div class="wtabs">${w.views.map((v,k)=>`<button class="chip-btn" aria-pressed="${k===0}">${esc(v.name)}</button>`).join("")}</div>`:""}
+    <div class="tl-wrap">${view(w.views[0])}</div>
+    <div class="wnote">המוקדם בימין, המאוחר בשמאל. ${esc(w.note||"")}</div></div>`;
+}
+
+// Real Romm Vilna scans (800px wide). Rects and crops are in page pixels; everything is drawn in percentages.
+const pc=(a,b)=>(100*a/b).toFixed(3)+"%";
+function amudName(a){ return gem(parseInt(a))+" "+(/a$/.test(a)?"ע״א":"ע״ב"); }
+function hlBoxes(rects, ox, oy, w, h){ return rects.map(r=>`<div class="vhl" style="right:auto;left:${pc(r[0]-ox,w)};top:${pc(r[1]-oy,h)};width:${pc(r[2],w)};height:${pc(r[3],h)}"></div>`).join(""); }
+function bandShade(rects, oy, h){
+  const y0 = Math.min(...rects.map(r=>r[1])) - oy, y1 = Math.max(...rects.map(r=>r[1]+r[3])) - oy;
+  return `<div class="vdim" style="top:0;height:${pc(Math.max(0,y0),h)}"></div><div class="vdim" style="top:${pc(y1,h)};bottom:0"></div><div class="vbar" style="top:${pc(y0,h)};height:${pc(y1-y0,h)}"></div>`;
+}
+function vImg(p, ox, oy, w, h){ return `<img src="${p.img}" alt="" loading="lazy" style="left:${pc(-ox,w)};top:${pc(-oy,h)};width:${pc(p.w,w)}">`; }
+function vThumb(p, rects){ return `<div class="vthumb" data-vfull="${p.img}" data-h="${p.h}" data-r='${JSON.stringify(rects)}' style="aspect-ratio:${p.w}/${p.h}" title="הדף המלא">${vImg(p,0,0,p.w,p.h)}${hlBoxes(rects,0,0,p.w,p.h)}</div>`; }
+function renderVilna(v){
+  const book = DATA.daf.split(" ")[0];
+  const rows = v.pages.map(p=>{ const [cx,cy,cw,ch]=p.crop;
+    return `<div class="vrow"><div class="vcrop" data-vfull="${p.img}" data-h="${p.h}" data-r='${JSON.stringify(p.rects)}' style="aspect-ratio:${cw}/${ch};max-width:${Math.round(cw*2)}px">${vImg(p,cx,cy,cw,ch)}${bandShade(p.rects,cy,ch)}</div>
+      <div>${vThumb(p,p.rects)}<div class="vcap">${esc(book)} ${esc(amudName(p.amud))}</div></div></div>${p.more?`<div class="vmore">הקטע ממשיך למטה. לחצו על הדף לראות את כולו.</div>`:""}`; }).join("");
+  return `<div class="vilna"><div class="vhead"><b>בגמרא שלכם · ${esc(book)} ${v.pages.map(p=>esc(amudName(p.amud))).join(" ← ")}</b><span>מתחיל: <q>${esc(v.open)}</q></span></div>${rows}</div>`;
+}
+function renderCoverage(){
+  const by = {}, order = [];
+  S.forEach(s=>(s.vilna?s.vilna.pages:[]).forEach(p=>{ if(!by[p.img]){ by[p.img]={p, rects:[]}; order.push(p.img); } by[p.img].rects.push(...p.rects); }));
+  if(!order.length) return "";
+  const book = DATA.daf.split(" ")[0];
+  return `<h2 class="panel-title" style="margin-top:18px">על הדף המודפס</h2><div class="vilna"><div class="vcover">${order.map(k=>`<div>${vThumb(by[k].p, by[k].rects)}<div class="vcap">${esc(book)} ${esc(amudName(by[k].p.amud))}</div></div>`).join("")}</div>
+    <div class="vmore">המסומן הוא מה שנלמד היום. לחצו על עמוד לראות אותו בגודל מלא. דפוס ראם וילנא, המיקום מדויק לשורה או שתיים.</div></div>`;
+}
+document.addEventListener("click", e=>{
+  const el = e.target.closest("[data-vfull]"); if(!el) return;
+  const r = JSON.parse(el.dataset.r), h = +el.dataset.h, m = document.createElement("div");
+  m.className = "vmodal"; m.innerHTML = `<button class="vx" aria-label="סגירה">×</button><div class="vfull" style="aspect-ratio:800/${h}"><img src="${el.dataset.vfull}" alt="" style="left:0;top:0;width:100%">${hlBoxes(r,0,0,800,h)}</div>`;
+  m.addEventListener("click", ev=>{ if(ev.target===m || ev.target.classList.contains("vx")) m.remove(); });
+  document.body.appendChild(m);
+  const f = m.querySelector(".vfull"); requestAnimationFrame(()=>{ const y = r.length? r[0][1]/h*f.offsetHeight : 0; m.scrollTop = Math.max(0, y-120); });
+});
+document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ const m=document.querySelector(".vmodal"); if(m){ m.remove(); e.stopPropagation(); } } }, true);
+
+function renderUnitTimeline(i){
+  const T = DATA.timeline;
+  const pts = T.points.filter(p=>p.from<=i && i<=p.until).map(p=>({...p, kind:[p.kind||"", p.on.includes(i)?"hi":"lo", p.fuzzy?"fuzzy":""].join(" ")}));
+  const id="w"+Math.random().toString(36).slice(2,7);
+  const w = {title:T.title, axis:T.axis, views:[{name:"", points:pts}], note:T.note};
+  return renderTimeline(w, id).replace('class="widget"','class="widget unit-tl"');
+}
+
+function renderBands(w, id){
+  const P = x => (x/w.max*100);
+  return `<div class="widget" id="${id}"><h3>${esc(w.title)}</h3>
+    <div class="bands">${w.rows.map(r=>`<div class="brow"><span class="blab">${esc(r.label)}</span><div class="btrack">${r.segs.map(([a,b,l])=>`<span class="bseg${l==="—"?" none":""}" style="inset-inline-start:${P(a)}%;width:${P(b-a)}%"><b>${esc(l)}</b></span>`).join("")}</div></div>`).join("")}
+      <div class="brow"><span class="blab"></span><div class="baxis">${w.ticks.map(([a,l])=>l?`<span style="inset-inline-start:${P(a)}%">${esc(l)}</span>`:"").join("")}</div></div>
+    </div><div class="wnote">${esc(w.note||"")}</div></div>`;
+}
+
+function renderSum(w, id){
+  return `<div class="widget" id="${id}"><h3>${esc(w.title)}</h3>
+    <div class="sum">${w.items.map(([l,v],k)=>`${k?`<span class="op">+</span>`:""}<span class="tile"><b>${esc(l)}</b><small>${v}</small></span>`).join("")}<span class="op">=</span><span class="tile total"><b>${w.total}</b><small>מצוות</small></span></div></div>`;
+}
+
+function renderLadder(w, id){
+  const L = DATA.ladder, at = new Set(w.at), first = Math.min(...w.at);
+  return `<div class="widget" id="${id}"><h3>הסולם של ר׳ שמלאי</h3>
+    <ol class="ladder">${L.map((s,k)=>`<li class="${at.has(k)?"cur":k<first?"past":"next"}${s.rejected?" rej":""}" style="--k:${k}">
+      <span class="ln">${s.n}</span><span class="lw">${esc(s.who)}<small>${esc(s.src)}</small></span>${s.rejected?`<span class="lr">נדחה</span>`:""}</li>`).join("")}</ol></div>`;
+}
+
+function renderSukkah(w, id){
+  const S0 = {...w.init}, C = new Set(w.controls);
+  const ctl = [
+    C.has("height") ? `<label class="sk-row"><span>גובה הסכך</span><input type="range" id="${id}_h" min="5" max="45" step="1" value="${S0.h}"><output id="${id}_ho"></output></label>` : "",
+    C.has("width") ? `<label class="sk-row"><span>רוחב (אמות)</span><input type="range" id="${id}_w" min="4" max="10" step="1" value="${S0.width}"><output id="${id}_wo"></output></label>` : "",
+    C.has("walls") ? `<label class="sk-chk"><input type="checkbox" id="${id}_walls" ${S0.walls?"checked":""}> הדפנות מגיעות עד הסכך</label>` : "",
+    C.has("mountains") ? `<label class="sk-chk"><input type="checkbox" id="${id}_m" ${S0.mountains?"checked":""}> הרים מסביב (עשתרות קרנים)</label>` : "",
+    C.has("iron") ? `<label class="sk-chk"><input type="checkbox" id="${id}_iron" ${S0.iron?"checked":""}> מחיצות של ברזל</label>` : "",
+  ].join("");
+  WIDGET_INIT.push(()=>{
+    const root=document.getElementById(id); if(!root) return;
+    const $$ = s => root.querySelector(s);
+    const read = () => { const g=(k,d)=>{const el=document.getElementById(id+"_"+k); return el?(el.type==="checkbox"?el.checked:+el.value):d;};
+      return {h:g("h",S0.h), width:g("w",S0.width), walls:g("walls",S0.walls), mountains:g("m",S0.mountains), iron:g("iron",S0.iron)}; };
+    const draw = () => {
+      const s = read(), k=5.4, G=282, Y=a=>G-a*k, cx=175, half=s.width*k/2, x0=cx-half, x1=cx+half;
+      const over = s.h>20;
+      const rab = !over ? [1,"עד 20 אמה העין רואה את הסכך"] : s.walls ? [1,"הדפנות מגיעות לסכך, והעין עולה איתן"] : [0,"״לא שלטא בה עינא״: העין לא מגיעה לסכך"];
+      const zei = !over ? [1, s.mountains?"״דל עשתרות קרנים״: בלי ההרים יש צל סכך":"יושבים בצל הסכך"] : s.width>4 ? [1,"סוכה רחבה: יש מקום בצל הסכך"] : [0,"יושבים בצל הדפנות, לא בצל הסכך"];
+      const rav = !over ? [1, s.iron?"גם בברזל: עד 20 אמה זה מבנה של עראי":"דירת עראי"] : [0,"מעל 20 אמה זו דירת קבע"];
+      const wallH = s.walls ? s.h : Math.min(s.h*0.55, 12);
+      const shadeOK = !over || s.width>4;
+      const eyeY = Y(2.6);
+      let svg = `<rect x="0" y="0" width="320" height="${G}" fill="var(--sky)"/>`;
+      if(s.mountains) svg += `<path d="M-10 ${G} L60 ${Y(38)} L130 ${G} Z M190 ${G} L270 ${Y(40)} L340 ${G} Z" fill="var(--line)" opacity=".9"/>`;
+      [10,20,30,40].forEach(a=>{ svg += `<line x1="30" x2="36" y1="${Y(a)}" y2="${Y(a)}" stroke="var(--muted)"/><text x="26" y="${Y(a)+4}" text-anchor="end" font-size="11" fill="var(--muted)">${a}</text>`; });
+      svg += `<line x1="33" x2="33" y1="${Y(45)}" y2="${G}" stroke="var(--muted)" stroke-width=".8"/>`;
+      svg += `<line x1="36" x2="316" y1="${Y(20)}" y2="${Y(20)}" stroke="var(--t-kushya)" stroke-dasharray="5 4" stroke-width="1.2"/><text x="314" y="${Y(20)-5}" text-anchor="end" font-size="11" fill="var(--t-kushya)">20 אמה</text>`;
+      const wallFill = s.iron ? "var(--ink)" : "var(--t-verse)";
+      svg += `<rect x="${x0-3}" y="${Y(wallH)}" width="3" height="${wallH*k}" fill="${wallFill}"/><rect x="${x1}" y="${Y(wallH)}" width="3" height="${wallH*k}" fill="${wallFill}"/>`;
+      if(!s.walls && wallH < s.h) svg += `<line x1="${x0-1.5}" x2="${x0-1.5}" y1="${Y(s.h)}" y2="${Y(wallH)}" stroke="var(--muted)" stroke-width=".8" stroke-dasharray="2 2"/><line x1="${x1+1.5}" x2="${x1+1.5}" y1="${Y(s.h)}" y2="${Y(wallH)}" stroke="var(--muted)" stroke-width=".8" stroke-dasharray="2 2"/>`;
+      svg += `<rect x="${x0-7}" y="${Y(s.h)-5}" width="${x1-x0+14}" height="5" rx="1.5" fill="var(--sch)"/>`;
+      // floor shade (principle only)
+      if(shadeOK){ svg += `<rect x="${x0}" y="${G-4}" width="${x1-x0}" height="4" fill="var(--sch)" opacity=".55"/>`; if(over) svg += `<rect x="${x0}" y="${G-4}" width="${k*1.2}" height="4" fill="var(--muted)"/><rect x="${x1-k*1.2}" y="${G-4}" width="${k*1.2}" height="4" fill="var(--muted)"/>`; }
+      else svg += `<rect x="${x0}" y="${G-4}" width="${x1-x0}" height="4" fill="var(--muted)" opacity=".8"/>`;
+      // person
+      svg += `<circle cx="${cx}" cy="${Y(3.1)}" r="2.6" fill="var(--ink)"/><line x1="${cx}" x2="${cx}" y1="${Y(2.7)}" y2="${Y(1.2)}" stroke="var(--ink)" stroke-width="2"/><line x1="${cx}" x2="${cx-3}" y1="${Y(1.2)}" y2="${G}" stroke="var(--ink)" stroke-width="1.6"/><line x1="${cx}" x2="${cx+3}" y1="${Y(1.2)}" y2="${G}" stroke="var(--ink)" stroke-width="1.6"/>`;
+      // eye line (Rabbah)
+      if(w.focus==="rabbah"||w.focus==="all"){ const ok=rab[0]; const ty = ok? Y(s.h) : Math.max(Y(s.h), Y(20));
+        svg += `<line x1="${cx}" y1="${Y(3.1)}" x2="${cx+ (ok?0:0)}" y2="${ty}" stroke="${ok?"var(--t-answer)":"var(--muted)"}" stroke-width="1.3" stroke-dasharray="${ok?"":"3 3"}"/>`; }
+      svg += `<line x1="0" x2="320" y1="${G}" y2="${G}" stroke="var(--ink)" stroke-width="1.2"/>`;
+      svg += `<text x="${x1+8}" y="${Y(s.h)+4}" font-size="11" fill="var(--sch)">סכך</text>`;
+      svg += `<text x="${cx}" y="${G+14}" text-anchor="middle" font-size="11" fill="${shadeOK?"var(--sch)":"var(--muted)"}">${shadeOK?"צל סכך":"צל דפנות"}</text>`;
+      $$("svg").innerHTML = svg;
+      const ho = document.getElementById(id+"_ho"); if(ho) ho.textContent = `${s.h} אמה, בערך ${(s.h*.48).toFixed(1)} עד ${(s.h*.58).toFixed(1)} מטר`;
+      const wo = document.getElementById(id+"_wo"); if(wo) wo.textContent = s.width===4 ? "4×4 בדיוק" : `${s.width}×${s.width}`;
+      const row = (who, r, f) => `<div class="sk-st${w.focus!=="all"&&w.focus!==f?" dim":""}"><span class="chip ${r[0]?"ok":"bad"}">${r[0]?"כשרה":"פסולה"}</span><b>${who}</b><span>${esc(r[1])}</span></div>`;
+      $$(".sk-status").innerHTML = row("רבה",rab,"rabbah")+row("ר׳ זירא",zei,"zeira")+row("רבא",rav,"rava")+`<div class="sk-st dim"><span class="chip ok">כשרה</span><b>ר׳ יהודה</b><span>מכשיר בכל מקרה</span></div>`;
+    };
+    root.querySelectorAll("input").forEach(i=>i.addEventListener("input",draw)); draw();
+  });
+  return `<div class="widget sk" id="${id}"><h3>סוכה בחתך: שחקו עם הגובה</h3>
+    <div class="sk-grid"><svg viewBox="0 0 320 300" style="direction:ltr" role="img" aria-label="תרשים סוכה בחתך"></svg>
+    <div class="sk-side">${ctl}<div class="sk-status"></div></div></div>
+    <div class="wnote">בקנה מידה: אדם לעומת 20 אמה. אמה = 48–58 ס״מ לפי השיעורים המקובלים. הצל מוצג באופן עקרוני, לפי הגמרא.</div></div>`;
+}
+
+function renderWidget(w){
+  const id="w"+Math.random().toString(36).slice(2,7);
+  if(w.type==="timeline") return renderTimeline(w,id);
+  if(w.type==="sum") return renderSum(w,id);
+  if(w.type==="bands") return renderBands(w,id);
+  if(w.type==="ladder") return renderLadder(w,id);
+  if(w.type==="sukkah") return renderSukkah(w,id);
+  if(w.type==="photo") return `<figure class="widget photo"><img src="${esc(w.src)}" alt="${esc(w.caption)}" loading="lazy"><figcaption>${esc(w.caption)} <a href="${esc(w.page)}" target="_blank" rel="noopener">${esc(w.credit)}</a></figcaption></figure>`;
+  if(w.type==="links") return `<div class="widget links"><h3>${esc(w.title)}</h3><div class="lnks">${w.links.map(l=>`<a class="chip-btn" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join("")}</div>${w.note?`<div class="wnote">${esc(w.note)}</div>`:""}</div>`;
+  if(w.type==="figure") return `<div class="widget fig"><h3>${esc(w.title)}</h3><div class="figsvg">${w.svg}</div>${w.note?`<div class="wnote">${esc(w.note)}</div>`:""}</div>`;
+  if(w.type==="diff"){
+    WIDGET_INIT.push(()=>{ const root=document.getElementById(id); if(!root) return;
+      const calc=()=>{ const v=[...root.querySelectorAll("input")].map(i=>parseFloat(i.value)||0); root.querySelector(".dres b").textContent=(v[0]-v[1]).toLocaleString("he-IL")+" "+w.unit; };
+      root.querySelectorAll("input").forEach(i=>i.oninput=calc); calc(); });
+    return `<div class="widget" id="${id}"><h3>${esc(w.title)}</h3>
+      <div class="dfields">${w.fields.map(([l,v],k)=>`<label><span>${esc(l)}</span><input id="${id}_${k}" type="number" min="0" value="${v}" inputmode="decimal"> <small>${esc(w.unit)}</small></label>`).join("")}</div>
+      <div class="dres">${esc(w.result)}: <b></b></div>
+      <div class="wnote">${esc(w.note)}</div></div>`;
+  }
+  const base=w.views[0].rows;
+  const table = v => `<table><thead><tr>${w.cols.map(c=>`<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${
+    v.rows.map((r,ri)=>`<tr>${r.map((c,ci)=>ci===0?`<td class="rowh">${esc(c)}</td>`:`<td class="${c!==base[ri][ci]?"diff":""}${c==="✓"?" yes":c==="✗"?" no":""}">${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+  WIDGET_INIT.push(()=>{
+    const root=document.getElementById(id); if(!root) return;
+    root.querySelectorAll(".wtabs button").forEach((b,k)=>b.onclick=()=>{
+      root.querySelectorAll(".wtabs button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+      root.querySelector(".tbl-wrap").innerHTML=table(w.views[k]);
+    });
+  });
+  return `<div class="widget" id="${id}"><h3>${esc(w.title)}</h3>
+    ${w.views.length>1?`<div class="wtabs">${w.views.map((v,k)=>`<button class="chip-btn" aria-pressed="${k===0}">${esc(v.name)}</button>`).join("")}</div>`:""}
+    <div class="tbl-wrap">${table(w.views[0])}</div>
+    ${w.views.length>1?`<div class="wnote">תא מודגש: מה שמשתנה לעומת ״${esc(w.views[0].name)}״</div>`:""}</div>`;
+}
+
+function setActive(id, lock){
+  st.active=id; if(lock!==undefined) st.locked=lock;
+  const cols=$("#cols"); if(!cols) return;
+  cols.classList.toggle("has-active",!!id);
+  cols.querySelectorAll("[data-n]").forEach(el=>el.classList.toggle("on",el.dataset.n===id));
+}
+function wireSlide(s){
+  const cols=$("#cols");
+  cols.querySelectorAll(".node, .gtext [data-n], .verse[data-n], .geo .gp[data-n]").forEach(el=>{
+    el.addEventListener("mouseenter",()=>{ if(!st.locked) setActive(el.dataset.n); });
+    el.addEventListener("mouseleave",()=>{ if(!st.locked) setActive(null); });
+    el.addEventListener("click",()=>{ if(el.classList.contains("hidden-step")) return;
+      if(st.locked && st.active===el.dataset.n) setActive(null,false); else setActive(el.dataset.n,true); });
+    el.addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); el.click(); }});
+  });
+  $("#rev").onclick=()=>{ st.reviewed.has(s.id)?st.reviewed.delete(s.id):st.reviewed.add(s.id); store.set(dk("reviewed"),[...st.reviewed]); renderSlide(); renderProgress(); };
+}
+
+function renderMap(){
+  const mins = S.reduce((a,s)=>a+s.min,0);
+  $("#stage").innerHTML=`
+    <div class="head"><div>
+      <div class="eyebrow">${esc(DATA.daf)} · ${esc(DATA.kind)} · לפני שמתחילים</div>
+      <h1>מפת הדף</h1>
+      <div class="speakers"><span class="spk">${N} שקפים<small>כ-${Math.round(mins)} דקות</small></span></div>
+    </div>
+    ${DATA.deepen?`<div class="head-actions"><a href="${DATA.deepen}" target="_blank" rel="noopener">סיכום הדף להעמקה ↗</a></div>`:""}</div>
+    <div class="cols">
+      <section class="panel">
+        ${LIB.pilot?`<p class="pilot">${esc(LIB.pilot.note)}</p>`:""}
+        <h2 class="panel-title">מה כבר מכירים</h2>
+        <p class="bridge">${bold(DATA.bridge)}</p>
+        ${renderCoverage()}
+        <h2 class="panel-title" style="margin-top:18px">המסלול</h2>
+        ${DATA.tree?`<p style="margin:0 0 8px;font-size:.9rem;color:var(--muted)">מבנה הסוגיה: הקו הראשי וההסתעפויות.</p>${renderTree(null,false)}`:`<ol class="map">${S.map((s,k)=>`<li><button class="maprow" data-k="${k}"><span class="mk">${k+1}</span><span class="mt">${esc(s.title)}</span><span class="ma">${esc(s.amud)}</span><span class="mm">${s.min} ד׳</span></button></li>`).join("")}</ol>`}
+      </section>
+      <div style="display:grid;gap:20px;min-width:0">
+      ${st.revItems.length?`<section class="panel review">
+        <h2 class="panel-title">חזרה מרווחת · לפני הדף החדש</h2>
+        <p style="margin:0 0 12px;font-size:.92rem;color:var(--muted)">שאלות מדפים קודמים. שאלה שלא ידעתם תחזור שוב בפעם הבאה.</p>
+        <div class="quiz">${st.revItems.map((x,j)=>{const v=st.rev[j];return `<div class="qi" data-j="${j}">
+          <div class="q"><span class="when">${esc(x.when)} · ${esc(x.daf.daf)}</span>${esc(x.q.q)}</div>
+          <div class="ans" ${v?"":"hidden"}>${esc(x.q.a)}</div>
+          <div class="row">${v?"":`<button class="show">הצג תשובה</button>`}
+            <button class="yes" aria-pressed="${v==="yes"}" ${v?"":"hidden"}>ידעתי</button>
+            <button class="no" aria-pressed="${v==="no"}" ${v?"":"hidden"}>לא ידעתי</button></div></div>`}).join("")}</div>
+      </section>`:""}
+      <section class="panel">
+        <h2 class="panel-title">נחשו לפני שלומדים</h2>
+        <p style="margin:0 0 12px;font-size:.92rem;color:var(--muted)">ניחוש לפני הלימוד עוזר לזכור, גם כשהוא שגוי. התשובות יופיעו בסוף הדף.</p>
+        <div class="quiz">${DATA.pretest.map((p,k)=>`<div class="qi"><div class="q">${k+1}. ${esc(p.q)}</div>
+          <div class="row">${p.options.map(o=>`<button class="opt" data-k="${k}" aria-pressed="${st.pre[k]===o}">${esc(o)}</button>`).join("")}</div></div>`).join("")}</div>
+      </section>
+      </div>
+    </div>`;
+  document.querySelectorAll(".review .qi").forEach(el=>{
+    const j=+el.dataset.j, x=st.revItems[j];
+    const sh=el.querySelector(".show"); if(sh) sh.onclick=()=>{ el.querySelector(".ans").hidden=false; sh.remove(); el.querySelectorAll(".yes,.no").forEach(b=>b.hidden=false); };
+    el.querySelectorAll(".yes,.no").forEach(b=>b.onclick=()=>{
+      const v=b.classList.contains("yes")?"yes":"no"; st.rev[j]=v; store.set(dk("rev"),st.rev);
+      const src=store.get(dk("quiz",x.daf.id),{}); src[x.k]=v; store.set(dk("quiz",x.daf.id),src);
+      renderMap(); });
+  });
+  document.querySelectorAll(".maprow").forEach(b=>b.onclick=()=>go(+b.dataset.k));
+  document.querySelectorAll(".tree button").forEach(b=>b.onclick=()=>go(+b.dataset.s));
+  document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{ st.pre[b.dataset.k]=b.textContent; store.set(dk("pre"),st.pre); renderMap(); });
+}
+
+function renderSummary(){
+  const tot=st.times.reduce((a,b)=>a+b,0), T=k=>st.times[k+1], mx=Math.max(1,...S.map((_,k)=>T(k)));
+  const answered=Object.values(st.quiz).filter(v=>v!=null).length, knew=Object.values(st.quiz).filter(v=>v==="yes").length;
+  $("#stage").innerHTML=`
+    <div class="head"><div>
+      <div class="eyebrow">${esc(DATA.daf)} · סיום</div>
+      <h1>חזרה ומדידה</h1>
+      <div class="speakers"><span class="spk">${st.reviewed.size} מתוך ${N} שקפים סומנו כנבדקים</span></div>
+    </div></div>
+    <section class="panel dinim">
+      <h2 class="panel-title">${esc(DATA.summaryTitle||"סיכום הדינים של הדף")} · חצי דקה</h2>
+      <ol>${DATA.dinim.map(x=>`<li>${bold(x)}</li>`).join("")}</ol>
+    </section>
+    ${DATA.pretest.some((p,k)=>st.pre[k])?`<section class="panel pre-check">
+      <h2 class="panel-title">הניחושים שלכם מתחילת הדף</h2>
+      ${DATA.pretest.map((p,k)=>`<div class="pq"><div class="q">${esc(p.q)}</div><div class="guess">ניחשתם: ${esc(st.pre[k]||"לא נענה")}</div><div class="ans">${esc(p.a)}</div></div>`).join("")}
+    </section>`:""}
+    <div class="sum-grid">
+      <section class="panel">
+        <h2 class="panel-title">זמן לימוד</h2>
+        <div class="total">${fmt(tot)}</div>
+        <p style="margin:2px 0 14px;color:var(--muted);font-size:.9rem">הזמן נמדד רק כשהדף פתוח ומוצג.</p>
+        <div class="times">${S.map((s,k)=>`<div class="trow"><span class="n" title="${esc(s.title)}">${k+1}. ${esc(s.title)}</span><div class="barbg"><div class="barf" style="width:${(T(k)/mx*100).toFixed(1)}%"></div></div><span class="v">${fmt(T(k))}</span></div>`).join("")}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
+          <button class="chip-btn" id="copy">העתק תוצאות</button>
+          <button class="chip-btn" id="reset">איפוס זמנים ותשובות</button>
+          <span class="copied" id="copied" hidden>הועתק</span>
+        </div>
+        <textarea class="copybox" id="copybox" readonly hidden></textarea>
+      </section>
+      <section class="panel">
+        <p style="margin:0 0 10px;font-size:.92rem;color:var(--muted)">קודם עונים בקול או מסבירים לחברותא, ורק אחר כך פותחים את התשובה.</p>
+        <h2 class="panel-title">שאלות חזרה <span class="score" id="score">${answered?`· ${knew}/${answered} ידעתי`:""}</span></h2>
+        <div class="quiz">${DATA.quiz.map((q,k)=>{const v=st.quiz[k];return `<div class="qi" data-k="${k}">
+          <div class="q">${k+1}. ${esc(q.q)}</div>
+          <div class="ans" ${v?"":"hidden"}>${esc(q.a)}</div>
+          <div class="row">${v?"":`<button class="show">הצג תשובה</button>`}
+            <button class="yes" aria-pressed="${v==="yes"}" ${v?"":"hidden"}>ידעתי</button>
+            <button class="no" aria-pressed="${v==="no"}" ${v?"":"hidden"}>לא ידעתי</button></div></div>`}).join("")}</div>
+      </section>
+    </div>
+    ${LIB.pilot?`<p class="pilot" style="margin-top:24px">${esc(LIB.pilot.note)}</p>`:""}<p class="credits">${esc(DATA.credits)} הביאור והמהלך נכתבו לדוגמה על בסיס ביאור הרב שטיינזלץ בספריא, ויש לבדוק אותם לפני שיעור. הקישור ״בספריא עם שטיינזלץ״ בכל שקף פותח את המקור.</p>`;
+  document.querySelectorAll(".qi").forEach(el=>{
+    const k=+el.dataset.k;
+    const sh=el.querySelector(".show"); if(sh) sh.onclick=()=>{ el.querySelector(".ans").hidden=false; sh.remove(); el.querySelectorAll(".yes,.no").forEach(b=>b.hidden=false); };
+    el.querySelectorAll(".yes,.no").forEach(b=>b.onclick=()=>{ st.quiz[k]=b.classList.contains("yes")?"yes":"no"; store.set(dk("quiz"),st.quiz); renderSummary(); });
+  });
+  const text=()=>[`${DATA.daf} · דף בריצה`,`זמן כולל: ${fmt(tot)}`,`מפת הדף: ${fmt(st.times[0])}`,...S.map((s,k)=>`${k+1}. ${s.title}: ${fmt(T(k))}`),`חזרה: ${fmt(st.times[N+1])}`,`שאלות: ${knew}/${DATA.quiz.length} ידעתי (${answered} נענו)`,`חזרה מרווחת: ${st.revItems.map((x,j)=>st.rev[j]?(x.daf.daf+" ש"+(x.k+1)+": "+(st.rev[j]==="yes"?"ידעתי":"לא ידעתי")):"").filter(Boolean).join(" | ")||"לא נענתה"}`,`ניחושים בפתיחה: ${DATA.pretest.map((p,k)=>st.pre[k]?(k+1)+") "+st.pre[k]:"").filter(Boolean).join(" | ")}`].join("\n");
+  $("#copy").onclick=()=>{
+    const t=text(), ok=()=>{$("#copied").hidden=false};
+    try{ navigator.clipboard.writeText(t).then(ok,()=>fallback(t)); }catch(e){ fallback(t); }
+  };
+  const fallback=t=>{ const b=$("#copybox"); b.hidden=false; b.value=t; b.focus(); b.select(); };
+  $("#reset").onclick=()=>{ st.times=new Array(N+2).fill(0); st.quiz={}; st.pre={}; st.rev={}; ["times","quiz","pre","rev"].forEach(k=>store.set(dk(k), k==="times"?st.times:{})); renderSummary(); };
+}
+
+function renderProgress(){
+  $("#progress").innerHTML = [`<button class="${st.i===-1?"cur":"done"}" title="מפת הדף" aria-label="מפת הדף"></button>`, ...S.map((s,k)=>`<button class="${k<st.i?"done":""} ${k===st.i?"cur":""} ${st.reviewed.has(s.id)?"ok":""}" title="${k+1}. ${esc(s.title)}" aria-label="שקף ${k+1}"></button>`),
+    `<button class="${st.i===N?"cur":""}" title="חזרה ומדידה" aria-label="סיכום"></button>`].join("");
+  $("#progress").querySelectorAll("button").forEach((b,k)=>b.onclick=()=>go(k-1));
+}
+function render(){
+  st.active=null; st.locked=false;
+  if(st.i<0) renderMap(); else if(st.i<N) renderSlide(); else renderSummary();
+  renderProgress();
+  $("#prev").disabled = st.i===-1;
+  $("#next").disabled = st.i===N;
+  $("#next").textContent = st.i===-1 ? "מתחילים ←" : st.i===N-1 ? "לסיכום ←" : "הבא ←";
+  const lesson = st.mode==="lesson" && st.i<N && st.i>=0;
+  $("#step").hidden = !lesson;
+  if(lesson){ const tot=buildSeq(S[st.i]).length; $("#step").disabled = st.step>=tot; $("#step").textContent = st.step>=tot ? "הכל נחשף" : `הצעד הבא (${st.step}/${tot})`; }
+  $("#keys").textContent = lesson ? "רווח: הצעד הבא · חיצים: מעבר שקף" : "חיצים למעבר · לחיצה על צומת מדגישה את הטקסט";
+  $("#mStudy").setAttribute("aria-pressed",st.mode==="study"); $("#mLesson").setAttribute("aria-pressed",st.mode==="lesson");
+  $("#tExplain").setAttribute("aria-pressed",st.explain);
+}
+function go(k){ st.i=Math.max(-1,Math.min(N,k)); st.step=0; render(); window.scrollTo({top:0}); }
+function stepFwd(){ if(st.mode!=="lesson"||st.i>=N||st.i<0){ go(st.i+1); return; }
+  const tot=buildSeq(S[st.i]).length; if(st.step<tot){ st.step++; render(); } else go(st.i+1); }
+
+$("#prev").onclick=()=>go(st.i-1);
+$("#next").onclick=()=>go(st.i+1);
+$("#step").onclick=stepFwd;
+$("#mStudy").onclick=()=>{ st.mode="study"; store.set("mode","study"); render(); };
+$("#mLesson").onclick=()=>{ st.mode="lesson"; st.step=0; store.set("mode","lesson"); render(); };
+$("#tExplain").onclick=()=>{ st.explain=!st.explain; store.set("explain",st.explain); render(); };
+document.addEventListener("keydown",e=>{
+  if(e.target.closest("textarea,input")) return;
+  if(e.key==="ArrowLeft"){ e.preventDefault(); go(st.i+1); }
+  else if(e.key==="ArrowRight"){ e.preventDefault(); go(st.i-1); }
+  else if(e.key===" " && !e.target.closest("button,[role=button]")){ e.preventDefault(); stepFwd(); }
+  else if(e.key==="Escape"){ setActive(null,false); }
+});
+
+let last=performance.now();
+setInterval(()=>{
+  const now=performance.now(), dt=(now-last)/1000; last=now;
+  if(document.visibilityState==="visible" && dt<5){ st.times[st.i+1]+=dt; }
+  $("#timer").textContent=fmt(st.times.reduce((a,b)=>a+b,0));
+  if(Math.random()<.2) store.set(dk("times"),st.times);
+},1000);
+addEventListener("pagehide",()=>store.set(dk("times"),st.times));
+
+
+// ---- optional study layers ----
+st.opts = Object.assign({qs:false, bagrut:false, lessons:false}, store.get("opts", {}));
+const OPT_IDS = {qs:"optQs", bagrut:"optBagrut", lessons:"optLessons"};
+function syncDeepBtn(){ const n=Object.values(st.opts).filter(Boolean).length; $("#tDeep").textContent = n ? `העמקה · ${n}` : "העמקה"; $("#tDeep").setAttribute("aria-pressed", n>0); }
+Object.entries(OPT_IDS).forEach(([k,id])=>{ const el=document.getElementById(id); el.checked=!!st.opts[k];
+  el.onchange=()=>{ st.opts[k]=el.checked; store.set("opts",st.opts); syncDeepBtn(); if(st.i>=0&&st.i<N) renderSlide(); }; });
+$("#tDeep").onclick=()=>{ const pnl=$("#deepPanel"); pnl.hidden=!pnl.hidden; $("#tDeep").setAttribute("aria-expanded", !pnl.hidden); };
+syncDeepBtn();
+const safeUrl = u => /^https?:\/\/[^\s"'<>]+$/i.test(u||"") ? u : null;
+function slideDaf(s){ const r = s.refs[0] || (S.find(x=>x.refs.length)||{refs:["2a:1"]}).refs[0]; const d=r.split(":")[0]; return {n:parseInt(d), a:/a$/.test(d)?"א":"ב", ref:r}; }
+function autoLessons(s){
+  const L = DATA.lessons; if(!L) return [];
+  const {n,a,ref} = slideDaf(s), pad = String(n).padStart(3,"0");
+  return [
+    {label:`הדרן: שיעור על דף ${gem(n)}`, url:`https://hadran.org.il/he/daf/${L.hadran}-${n}_he/`},
+    {label:`טבלאות כולל עיון הדף`, url:`https://www.dafyomi.co.il/${L.kih}${pad}.htm`},
+    {label:`ספריא + שטיינזלץ`, url:sefaria(ref)},
+    {label:`חיפוש ביוטיוב`, url:`https://www.youtube.com/results?search_query=${encodeURIComponent(`${L.yt} דף ${gem(n)} עמוד ${a}`)}`}];
+}
+function renderDeep(s, hide){
+  if(hide) return "";
+  const parts=[];
+  if(st.opts.qs && s.qs && s.qs.length) parts.push(`<section class="dsec"><h2>שאלות הבנה</h2>${s.qs.map((x,k)=>`<div class="dq"><div class="q">${k+1}. ${esc(x.q)}</div><p class="a" hidden>${esc(x.a)}</p><button class="dbtn" data-show>הצג תשובה</button></div>`).join("")}</section>`);
+  if(st.opts.bagrut && s.bagrut){ const b=s.bagrut;
+    const meta = b.real ? `<span class="badge real">שאלה מבחינת בגרות</span>שאלון ${esc(b.exam.code)} · ${esc(b.exam.name)} · ${esc(b.exam.year)} · ${esc(b.exam.q)} · <a href="${esc(b.exam.url)}" target="_blank" rel="noopener">השאלון המקורי ↗</a>${b.key?` · <a href="${esc(b.key.url)}" target="_blank" rel="noopener">דגם התשובות ↗</a>`:""}`
+                        : `<span class="badge own">ניסוח עצמי</span>לא נמצאה שאלת בגרות על הסוגיה הזו; השאלה נכתבה כאן בסגנון בגרות.`;
+    const src = b.answerSource==="key" ? `<span class="src">מתוך ${esc(b.key.label)}</span>` : `<span class="src own">תשובה מוצעת (ניסוח עצמי, לא רשמית)</span>`;
+    parts.push(`<section class="dsec bag"><h2>שאלת בגרות · סוף הסוגיה</h2><div class="sug">${esc(b.sugya)}</div><div class="bmeta">${meta}</div>
+      <p class="btext">${esc(b.text)}</p><div class="bans" hidden>${src}${esc(b.answer)}</div><button class="dbtn" data-show>הצג תשובה</button>
+      ${b.more&&b.more.length?`<ul class="more">${b.more.map(m=>`<li>עוד: <a href="${esc(m.url)}" target="_blank" rel="noopener">${esc(m.label)} ↗</a>${m.key?` · <a href="${esc(m.key)}" target="_blank" rel="noopener">תשובות ↗</a>`:""}</li>`).join("")}</ul>`:""}</section>`); }
+  if(st.opts.lessons){ const mine = store.get(dk("lessons:"+s.id), []);
+    parts.push(`<section class="dsec" id="lessons"><h2>שיעורים על הדף</h2><div class="lnk">${autoLessons(s).map(l=>`<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join("")}</div>
+      <div class="wnote">קישורים שנבנים אוטומטית לפי המסכת והדף. ביוטיוב זה חיפוש בלבד.</div>
+      ${mine.length?`<ul class="mine">${mine.map((m,k)=>`<li><a href="${esc(m.u)}" target="_blank" rel="noopener">${esc(m.t||m.u)}</a><button class="dbtn" data-del="${k}">הסרה</button></li>`).join("")}</ul>`:""}
+      <button class="dbtn" id="addL" style="margin-top:10px">+ הוסף שיעור</button>
+      <form class="addf" id="addF" hidden><input id="lUrl" type="url" placeholder="https://..." aria-label="קישור לשיעור" required><input id="lTitle" class="t" type="text" placeholder="שם השיעור (לא חובה)" aria-label="שם השיעור">
+        <div class="row"><button class="dbtn" type="submit">שמירה</button><button class="dbtn" type="button" id="addX">ביטול</button></div><div class="err" id="lErr" hidden>הקישור צריך להתחיל ב־https:// או http://</div></form></section>`); }
+  return parts.length ? `<div class="deep">${parts.join("")}</div>` : "";
+}
+function wireDeep(s){
+  document.querySelectorAll(".deep [data-show]").forEach(b=>b.onclick=()=>{ const box=b.parentElement.querySelector(".a,.bans"); box.hidden=!box.hidden; b.textContent=box.hidden?"הצג תשובה":"הסתר תשובה"; });
+  const key=dk("lessons:"+s.id), add=$("#addL"), f=$("#addF");
+  if(add){ add.onclick=()=>{ f.hidden=false; add.hidden=true; $("#lUrl").focus(); };
+    $("#addX").onclick=()=>{ f.hidden=true; add.hidden=false; };
+    f.onsubmit=e=>{ e.preventDefault(); const u=safeUrl($("#lUrl").value.trim()); if(!u){ $("#lErr").hidden=false; return; }
+      const list=store.get(key,[]); list.push({u, t:$("#lTitle").value.trim().slice(0,120)}); store.set(key,list); renderSlide(); };
+  }
+  document.querySelectorAll(".deep [data-del]").forEach(b=>b.onclick=()=>{ const list=store.get(key,[]); list.splice(+b.dataset.del,1); store.set(key,list); renderSlide(); });
+}
+
+$("#dafSel").innerHTML = [...new Set(LIB.library.map(d=>d.group))].map(g=>`<optgroup label="${esc(g)}">${LIB.library.map((d,k)=>d.group===g?`<option value="${k}">${esc(d.daf)} · ${esc(d.kind)}</option>`:"").join("")}</optgroup>`).join("");
+$("#dafSel").onchange = e => { store.set(dk("times"),st.times); loadDaf(+e.target.value); try{history.replaceState(null,"","#d"+DATA.id)}catch(_){} render(); window.scrollTo({top:0}); };
+const fromHash = (location.hash.match(/^#d(\w+)$/)||[])[1];
+const startId = fromHash || store.get("daf", LIB.start);
+loadDaf(Math.max(0, LIB.library.findIndex(d=>d.id===startId)));
+render();
+</script>
+
+</body></html>
+
+</body></html>
