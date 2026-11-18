@@ -1171,7 +1171,7 @@ $("#dafSel").onchange = e => { if(e.target.value==="M"){ enterMarathon(); return
 const fromHash = (location.hash.match(/^#d(\w+)$/)||[])[1];
 const startId = fromHash || store.get("daf", LIB.start);
 loadDaf(Math.max(0, LIB.library.findIndex(d=>d.id===startId)));
-if(location.hash==="#marathon" || (!fromHash && store.get("mOn", false))) enterMarathon(); else render();
+if(location.hash==="#marathon" || !fromHash) enterMarathon(); else render();  /* marathon.html opens in marathon mode by default */
 </script>
 
 </body></html>
