@@ -308,6 +308,16 @@ textarea.copybox{width:100%;min-height:90px;margin-top:8px;font:inherit;font-siz
 .geo-un{font-size:.86rem;margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
 .geo-un b{font-family:var(--f-text)}
 .geo-un span{color:var(--muted)}
+.note-btn{color:var(--muted)}
+.notep{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:-4px 0 16px;display:grid;gap:10px;max-width:640px}
+.notep .nhead{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.9rem}
+.notep .nx{border:0;background:transparent;cursor:pointer;color:var(--muted);font-size:1rem;padding:2px 6px}
+.notep .ntags{display:flex;flex-wrap:wrap;gap:6px}
+.notep textarea.nfree{width:100%;min-height:72px;font:inherit;font-size:1rem;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px;resize:vertical}
+.notep .nrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.notep .nsend{background:var(--accent);color:var(--accent-ink);text-decoration:none;border-radius:8px;padding:5px 16px;font-weight:600;font-size:.9rem;border:1px solid var(--accent)}
+.notep .nsend[aria-disabled="true"],.notep #noteCopy:disabled{opacity:.4;pointer-events:none}
+.notep .nhint{font-size:.8rem;color:var(--muted)}
 </style>
 
 <header class="bar">
@@ -474,6 +484,7 @@ function renderSlide(){
         ${refs.length?`<a href="${sefaria(refs[0])}" target="_blank" rel="noopener">בספריא עם שטיינזלץ ↗</a>`:""}
         ${DATA.deepen?`<a href="${DATA.deepen}" target="_blank" rel="noopener">להעמיק ↗</a>`:""}
         <button class="chip-btn" id="rev" aria-pressed="${st.reviewed.has(s.id)}">${st.reviewed.has(s.id)?"✓ נבדק":"סמן כנבדק"}</button>
+        <button class="chip-btn note-btn" id="noteBtn" aria-expanded="false" aria-controls="notePanel" title="הערה על השקף הזה">💬 הערה</button>
       </div>
     </div>
     ${s.check?`<div class="check"><b>לבדיקה:</b><span>${esc(s.check)}</span></div>`:""}
@@ -509,6 +520,7 @@ function renderSlide(){
     ${s.discuss?`<div class="discuss" ${lesson&&st.step<seq.length?"hidden":""}><span class="lbl">שאלה לחברותא</span><p>${esc(s.discuss)}</p></div>`:""}`;
   wireWidgets();
   wireSlide(s);
+  wireNote(s);
   const lastNode = lesson ? [...done].reverse().find(x=>x.node) : null;
   if(lastNode && !pauseOn) setActive(lastNode.node, false);
 }
@@ -731,6 +743,48 @@ function setActive(id, lock){
   cols.classList.toggle("has-active",!!id);
   cols.querySelectorAll("[data-n]").forEach(el=>el.classList.toggle("on",el.dataset.n===id));
 }
+// Per-slide feedback: prefilled Telegram message to the bot, with a copy fallback.
+const NOTE_BOT = "yehudaroth_bot", NOTE_TAGS = ["לא ברור","ארוך מדי","טעות","חסר הסבר","אחר"];
+const IN_FRAME = (()=>{ try{ return window.self!==window.top; }catch(e){ return true; } })();
+function noteText(s, tags, free){
+  const parts = ["הערה לדף בריצה", DATA.daf, `שקף ${st.i+1}/${N} – ${s.title}`];
+  if(tags.length) parts.push("תגיות: "+tags.join(", "));
+  const f = free.replace(/\s+/g," ").trim(); if(f) parts.push(f);
+  return parts.join(" | ");
+}
+function wireNote(s){
+  const btn=$("#noteBtn"), head=$("#stage .head"); if(!btn||!head) return;
+  const close=()=>{ const p=$("#notePanel"); if(p) p.remove(); btn.setAttribute("aria-expanded","false"); };
+  btn.onclick=()=>{
+    if($("#notePanel")){ close(); return; }
+    head.insertAdjacentHTML("afterend", `<div class="notep" id="notePanel" role="region" aria-label="הערה על השקף">
+      <div class="nhead"><b>הערה על שקף ${st.i+1}: ${esc(s.title)}</b><button class="nx" aria-label="סגירה">✕</button></div>
+      <div class="ntags">${NOTE_TAGS.map(t=>`<button class="chip-btn" aria-pressed="false">${esc(t)}</button>`).join("")}</div>
+      <textarea class="nfree" id="noteFree" rows="3" placeholder="מה לא עבד? מה כדאי לתקן או להוסיף?"></textarea>
+      <div class="nrow"><a class="nsend" id="noteSend" target="_blank" rel="noopener" href="#" aria-disabled="true">שלח</a>
+        <button class="chip-btn" id="noteCopy" disabled>העתק</button><span class="copied" id="noteCopied" hidden>הועתק</span></div>
+      <div class="nhint" id="noteHint" ${IN_FRAME?"":"hidden"}>אם טלגרם לא נפתח: ״העתק״ והדביקו בצ׳אט עם @${NOTE_BOT}.</div>
+      <textarea class="copybox" id="noteBox" readonly hidden></textarea></div>`);
+    btn.setAttribute("aria-expanded","true");
+    const p=$("#notePanel"), free=p.querySelector("#noteFree"), send=p.querySelector("#noteSend"), cp=p.querySelector("#noteCopy");
+    const tags=()=>[...p.querySelectorAll(".ntags button")].filter(b=>b.getAttribute("aria-pressed")==="true").map(b=>b.textContent);
+    const upd=()=>{ const t=tags(), empty=!t.length && !free.value.trim(), txt=noteText(s,t,free.value);
+      p.dataset.text=txt; send.href="https://t.me/"+NOTE_BOT+"?text="+encodeURIComponent(txt);
+      send.setAttribute("aria-disabled", empty); cp.disabled=empty; p.querySelector("#noteCopied").hidden=true; };
+    p.querySelectorAll(".ntags button").forEach(b=>b.onclick=()=>{ b.setAttribute("aria-pressed", b.getAttribute("aria-pressed")!=="true"); upd(); });
+    free.addEventListener("input", upd);
+    p.querySelector(".nx").onclick=()=>{ close(); btn.focus(); };
+    p.addEventListener("keydown", e=>{ if(e.key==="Escape"){ e.stopPropagation(); close(); btn.focus(); } });
+    send.addEventListener("click", e=>{ if(send.getAttribute("aria-disabled")==="true"){ e.preventDefault(); return; }
+      setTimeout(()=>{ p.querySelector("#noteHint").hidden=false; }, 600); });
+    cp.onclick=()=>{ const t=p.dataset.text, ok=()=>{ p.querySelector("#noteCopied").hidden=false; };
+      const fb=()=>{ const b=p.querySelector("#noteBox"); b.hidden=false; b.value=t; b.focus(); b.select();
+        try{ if(document.execCommand("copy")) ok(); }catch(_){} };
+      try{ navigator.clipboard.writeText(t).then(ok, fb); }catch(e){ fb(); } };
+    upd();
+  };
+}
+
 function wireSlide(s){
   const cols=$("#cols");
   cols.querySelectorAll(".node, .gtext [data-n], .verse[data-n], .geo .gp[data-n]").forEach(el=>{
