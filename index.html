@@ -318,6 +318,59 @@ textarea.copybox{width:100%;min-height:90px;margin-top:8px;font:inherit;font-siz
 .notep .nsend{background:var(--accent);color:var(--accent-ink);text-decoration:none;border-radius:8px;padding:5px 16px;font-weight:600;font-size:.9rem;border:1px solid var(--accent)}
 .notep .nsend[aria-disabled="true"],.notep #noteCopy:disabled{opacity:.4;pointer-events:none}
 .notep .nhint{font-size:.8rem;color:var(--muted)}
+/* Phone view: view switch (משולב | גמרא | ביאור), tap-to-explain bottom sheet, side-by-side text+explanation at 640-900px. */
+.pvcol{display:contents}
+.pvbar{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--pvTop,56px));z-index:4;display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;background:var(--bg);padding-block:8px;margin:-8px 0 10px}
+.pvseg{background:var(--surface)}
+.pvseg button{padding:6px 14px;min-height:34px}
+.pvchip{min-height:34px;background:var(--surface)}
+.pvhint{font-size:.78rem;color:var(--muted)}
+@media (min-width:901px){.pvchip,.pvhint{display:none}}
+
+/* snippets of Gemara inside the explanation: shown only in the explanation-only view */
+.explain p .pvq{display:none}
+#stage.pv-explain .explain p .pvq{display:block;font-family:var(--f-text);font-weight:600;color:var(--c);font-size:1.02rem;line-height:1.7;margin-bottom:4px}
+#stage.pv-explain .explain{margin-top:0;padding-top:0;border-top:0;gap:12px}
+#stage.pv-explain .explain>.panel-title{display:none}
+#stage.pv-explain .explain p{max-width:none;padding:8px 12px;border-inline-start:3px solid var(--c);border-radius:8px;background:color-mix(in srgb,var(--c) 6%,var(--surface))}
+#stage.pv-explain .pvcol>:is(.panel-title,.gemara,.verses,.vilna){display:none}
+#stage.pv-explain .cols>.panel:last-child>:is(.panel-title,.legend,.flow){display:none}
+#stage.pv-explain .cols>.panel:last-child>.widget:first-of-type{margin-top:0;border-top:0;padding-top:0}
+#stage.pv-explain .cols>.panel:last-child:not(:has(.widget)){display:none}
+#stage.pv-explain .pvnoexp{display:block}
+.pvnoexp{display:none;color:var(--muted);font-size:.92rem}
+
+/* Gemara-only view */
+#stage.pv-gemara .explain{display:none}
+
+/* active segment: stronger mark so it stays findable above the sheet */
+.gtext [data-n].on{outline:2px solid color-mix(in srgb,var(--c) 70%,transparent);outline-offset:1px}
+
+/* side by side: tablet / phone landscape, combined view */
+@media (min-width:640px) and (max-width:900px){
+  #stage.pv-mix .cols>.panel:first-child:has(>.explain:not([hidden])){display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);column-gap:18px;align-items:start}
+  #stage.pv-mix .cols>.panel:first-child:has(>.explain:not([hidden])) .pvcol{display:block;min-width:0}
+  #stage.pv-mix .cols>.panel:first-child>.explain{margin-top:0;padding-top:0;border-top:0;padding-inline-start:14px;border-inline-start:1px dashed var(--line);position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--pvTop,56px) + var(--pvBarH,50px) + 6px);max-height:calc(100vh - var(--pvTop,56px) - var(--pvBarH,50px) - 84px);overflow:auto;overscroll-behavior:contain;min-width:0}
+  #stage.pv-mix .explain p{font-size:.95rem}
+}
+
+/* bottom sheet */
+.pvsheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:760px;z-index:20;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-bottom:0;border-radius:16px 16px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.22);max-height:min(50vh,440px);display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px);transition:transform .18s ease-out;touch-action:pan-y}
+.pvsheet.drag{transition:none}
+.pvgrab{flex:none;width:44px;height:5px;border-radius:3px;background:var(--line);margin:8px auto 2px}
+.pvsh-head{flex:none;display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:4px max(14px,env(safe-area-inset-right,0px)) 8px max(14px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line)}
+.pvsh-head .pvpos{font-size:.76rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.pvx{margin-inline-start:auto;border:1px solid var(--line);background:transparent;border-radius:50%;width:34px;height:34px;cursor:pointer;color:var(--muted);font-size:1rem}
+.pvsh-body{overflow:auto;overscroll-behavior:contain;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));display:grid;gap:8px}
+.pvquote{font-family:var(--f-text);font-size:1.12rem;line-height:1.85;background:color-mix(in srgb,var(--c) 12%,transparent);border-inline-start:3px solid var(--c);padding:4px 10px;border-radius:6px}
+.pvsh-body p{margin:0;font-size:1.02rem}
+.pvsh-body p b{font-family:var(--f-text);font-weight:700;font-size:1.06em}
+.pvnode{font-size:.84rem;color:var(--muted)}
+.pvsh-nav{flex:none;display:flex;justify-content:space-between;gap:10px;padding:8px max(14px,env(safe-area-inset-right,0px)) 10px max(14px,env(safe-area-inset-left,0px));border-top:1px solid var(--line)}
+.pvsh-nav button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:7px 14px;cursor:pointer;font-weight:600}
+.pvsh-nav button:disabled{opacity:.4;cursor:default}
+@media (max-height:500px){.pvsheet{max-height:64vh}.pvgrab{display:none}.pvsh-head{padding-top:6px;padding-bottom:4px}.pvx{width:28px;height:28px}.pvsh-nav{padding-block:4px}.pvsh-nav button{padding:3px 12px}.pvquote{font-size:1rem;line-height:1.6}}
+@media (prefers-reduced-motion:reduce){.pvsheet{transition:none}}
 </style>
 
 <header class="bar">
@@ -331,7 +384,6 @@ textarea.copybox{width:100%;min-height:90px;margin-top:8px;font:inherit;font-siz
         <button id="mStudy" aria-pressed="true">לימוד</button>
         <button id="mLesson" aria-pressed="false">שיעור</button>
       </div>
-      <button class="chip-btn" id="tExplain" aria-pressed="true">ביאור</button>
     </div>
   </div>
 </header>
@@ -363,7 +415,7 @@ const store = {
   set(k,v){try{localStorage.setItem("dafr:"+k,JSON.stringify(v))}catch(e){}}
 };
 const dk = (k, id=DATA.id) => id+":"+k;
-const st = { i:-1, mode: store.get("mode","study"), explain: store.get("explain",true), step:0, active:null, locked:false };
+const st = { i:-1, mode: store.get("mode","study"), step:0, active:null, locked:false };
 function loadDaf(k){
   DI = Math.max(0, Math.min(LIB.library.length-1, k)); DATA = LIB.library[DI]; S = DATA.slides; N = S.length;
   st.i = -1; st.step = 0;
@@ -489,18 +541,22 @@ function renderSlide(){
     </div>
     ${s.check?`<div class="check"><b>לבדיקה:</b><span>${esc(s.check)}</span></div>`:""}
     ${DATA.tree?renderTree(st.i,true):""}
+    ${pvBarHTML()}
     <div class="cols" id="cols">
       <section class="panel">
+        <div class="pvcol">
         <h2 class="panel-title">${s.geo?"מפה סכמטית":s.intro?"רקע":"הטקסט"}</h2>
         ${s.geo?renderGeo(s.geo):""}
         ${s.vilna?renderVilna(s.vilna):""}
         ${s.intro?`<div class="paras">${s.paras.map(p=>`<p>${bold(p)}</p>`).join("")}</div>`:""}
         <div class="gemara">${s.text.map(([r,t])=>`<div class="seg-row"><span class="ref">${esc(refLabel(r))}</span><p class="gtext">${renderGemara(t,typeOf,revealed)}</p></div>`).join("")}</div>
         ${s.verses&&s.verses.length?`<div class="verses"><h2 class="panel-title">${s.verses.length>1?"הפסוקים במלואם":"הפסוק במלואו"}</h2>${s.verses.map(v=>renderVerse(v,typeOf,s.numbered,revealed)).join("")}</div>`:""}
-        <div class="explain" ${st.explain&&s.explain.length?"":"hidden"}>
-          <h2 class="panel-title">ביאור</h2>
-          ${s.explain.map(([n,t])=>`<p data-n="${n}" style="--c:var(${TYPES[typeOf[n]].c})" ${revealed&&!revealed.has(n)?"hidden":""}>${bold(t)}</p>`).join("")}
         </div>
+        <div class="explain" ${s.explain.length?"":"hidden"}>
+          <h2 class="panel-title">ביאור</h2>
+          ${s.explain.map(([n,t])=>`<p data-n="${n}" style="--c:var(${TYPES[typeOf[n]].c})" ${revealed&&!revealed.has(n)?"hidden":""}>${pvQ(s,n)}${bold(t)}</p>`).join("")}
+        </div>
+        ${!s.explain.length&&!s.intro?`<p class="pvnoexp">לשקף הזה אין ביאור נפרד.</p>`:""}
       </section>
       <section class="panel">
         ${DATA.timeline && DATA.timeline.show.includes(st.i) ? renderUnitTimeline(st.i) : ""}
@@ -521,8 +577,10 @@ function renderSlide(){
   wireWidgets();
   wireSlide(s);
   wireNote(s);
+  wirePV();
   const lastNode = lesson ? [...done].reverse().find(x=>x.node) : null;
   if(lastNode && !pauseOn) setActive(lastNode.node, false);
+  pvSync();
 }
 
 function renderVerse(v, typeOf, numbered, revealed){
@@ -742,7 +800,107 @@ function setActive(id, lock){
   const cols=$("#cols"); if(!cols) return;
   cols.classList.toggle("has-active",!!id);
   cols.querySelectorAll("[data-n]").forEach(el=>el.classList.toggle("on",el.dataset.n===id));
+  pvSync();
 }
+// Phone view: view switch (משולב | גמרא | ביאור), tap-to-explain bottom sheet (phone, or tablet in "גמרא" view),
+// side-by-side text + explanation at 640-900px in "משולב". The view and the sheet on/off are stored per viewer.
+const PV = { view: store.get("pv:view","mix"), sheet: store.get("pv:sheet", true), open: null };
+if(!["mix","gemara","explain"].includes(PV.view)) PV.view = "mix";
+try{ localStorage.removeItem("dafr:explain"); }catch(e){}   // old header "ביאור" toggle, replaced by the view switch
+const PV_VIEWS = [["mix","משולב"],["gemara","גמרא"],["explain","ביאור"]];
+const pvMqPhone = matchMedia("(max-width:639px)"), pvMqMid = matchMedia("(min-width:640px) and (max-width:900px)");
+const pvSideBySide = () => pvMqMid.matches && PV.view==="mix";
+const pvSheetOn = () => PV.sheet && PV.view!=="explain" && (pvMqPhone.matches || (pvMqMid.matches && PV.view==="gemara"));
+const pvOnSlide = () => st.i>=0 && st.i<N && !!$("#pvBar");
+const pvSel = id => `[data-n="${CSS.escape(id)}"]`;
+// the Gemara words of a node (all its marks on the slide), for the sheet and the explanation-only view
+function pvQ(s, id){
+  const parts=[]; s.text.forEach(([,t])=>{ for(const m of t.matchAll(/\{(\w+)\|([^}]*)\}/g)) if(m[1]===id && m[2].trim()) parts.push(m[2].trim()); });
+  const q=parts.join(" … "), t = q.length>160 ? q.slice(0,158)+"…" : q;
+  return t ? `<span class="pvq">${esc(t)}</span>` : "";
+}
+const pvQuoteText = id => { const t=pvQ(S[st.i], id); return t ? t.replace(/^<span class="pvq">|<\/span>$/g,"") : ""; };
+function pvBarHTML(){
+  return `<div class="pvbar" id="pvBar"><div class="seg pvseg" role="group" aria-label="מה להציג">${PV_VIEWS.map(([v,l])=>`<button data-v="${v}" aria-pressed="${PV.view===v}">${l}</button>`).join("")}</div>
+      <button class="chip-btn pvchip" id="pvSheetBtn" aria-pressed="${PV.sheet}" title="לחיצה על קטע בגמרא פותחת את הביאור שלו מלמטה">ביאור בלחיצה</button><span class="pvhint" id="pvHint">לחצו על קטע צבוע</span></div>`;
+}
+
+// header height -> sticky offset of the view bar
+const pvHdr = document.querySelector("header.bar"), pvRoot = document.documentElement;
+const pvSetTop = () => pvRoot.style.setProperty("--pvTop", pvHdr.offsetHeight+"px");
+try{ new ResizeObserver(pvSetTop).observe(pvHdr); }catch(e){} pvSetTop();
+
+// bottom sheet
+document.body.insertAdjacentHTML("beforeend", `<div class="pvsheet" id="pvSheet" role="dialog" aria-modal="false" aria-label="ביאור הקטע" hidden>
+  <div class="pvgrab" aria-hidden="true"></div>
+  <div class="pvsh-head"><span class="pill" id="pvPill"></span><span class="who" id="pvWho"></span><span class="pvpos" id="pvPos"></span><button class="pvx" id="pvX" aria-label="סגירה">✕</button></div>
+  <div class="pvsh-body" id="pvBody"></div>
+  <div class="pvsh-nav"><button id="pvPrev">→ הקטע הקודם</button><button id="pvNext">הקטע הבא ←</button></div></div>`);
+const pvSh = $("#pvSheet");
+const pvSegIds = () => [...new Set([...document.querySelectorAll("#cols .gtext [data-n]:not(.hidden-step)")].map(e=>e.dataset.n))];
+function pvClose(){ if(pvSh.hidden) return; pvSh.hidden = true; pvSh.style.transform=""; PV.open = null; const m=$("main"); if(m) m.style.paddingBottom = ""; }
+function pvOpen(id){
+  const s = S[st.i], node = s.nodes.find(n=>n.id===id), ty = node ? node.type : "source";
+  pvSh.style.setProperty("--c", `var(${TYPES[ty].c})`);
+  $("#pvPill").textContent = node ? node.label : TYPES[ty].name;
+  $("#pvWho").textContent = node && node.who ? node.who : "";
+  const ids = pvSegIds(), k = ids.indexOf(id);
+  $("#pvPos").textContent = k>=0 ? `${k+1}/${ids.length}` : "";
+  const exps = s.explain.filter(([n])=>n===id).filter(()=>{ const p=document.querySelector("#cols .explain p"+pvSel(id)); return !p || !p.hidden; });
+  const q = pvQuoteText(id);
+  $("#pvBody").innerHTML = (q?`<div class="pvquote">${q}</div>`:"")
+    + (exps.length ? exps.map(([,t])=>`<p>${bold(t)}</p>`).join("") : `<p class="pvnode">אין ביאור נפרד לקטע הזה.</p>`)
+    + (node && node.text ? `<div class="pvnode">במהלך: ${esc(node.text)}</div>` : "");
+  $("#pvBody").scrollTop = 0;
+  $("#pvPrev").disabled = k<=0; $("#pvNext").disabled = k<0 || k>=ids.length-1;
+  const first = PV.open===null; PV.open = id; pvSh.hidden = false; pvSh.style.transform="";
+  const h = pvSh.offsetHeight, m=$("main"); if(m) m.style.paddingBottom = (h+40)+"px";
+  // keep the tapped segment visible above the sheet
+  const el = document.querySelector("#cols .gtext "+pvSel(id)) || document.querySelector("#cols "+pvSel(id));
+  if(el){ const r = el.getBoundingClientRect(), top = pvHdr.getBoundingClientRect().bottom + (($("#pvBar")||{}).offsetHeight||0), bottom = innerHeight - h - 8;
+    if(r.top < top || r.bottom > bottom){ const want = top + Math.max(8, (bottom-top-r.height)/2); scrollBy({top: r.top - want, behavior: first?"auto":"smooth"}); } }
+}
+function pvSyncCol(){
+  if(!pvSideBySide() || !st.active) return;
+  const ex = document.querySelector("#cols .explain"), p = ex && ex.querySelector("p"+pvSel(st.active)); if(!p) return;
+  const er = ex.getBoundingClientRect(), pr = p.getBoundingClientRect();
+  if(pr.top < er.top || pr.bottom > er.bottom) ex.scrollBy({top: pr.top - er.top - 8, behavior:"smooth"});
+}
+function pvSync(){
+  if(!pvOnSlide()){ pvClose(); return; }
+  if(pvSheetOn() && st.locked && st.active && document.querySelector("#cols "+pvSel(st.active))) pvOpen(st.active); else pvClose();
+  pvSyncCol();
+}
+function pvReset(){ pvClose(); const g=$("#stage"); if(g) ["mix","gemara","explain"].forEach(v=>g.classList.remove("pv-"+v)); }
+$("#pvX").onclick = () => setActive(null,false);
+const pvStep = d => { const ids=pvSegIds(), k=ids.indexOf(PV.open); if(k>=0 && ids[k+d]) setActive(ids[k+d], true); };
+$("#pvPrev").onclick = () => pvStep(-1); $("#pvNext").onclick = () => pvStep(1);
+// swipe down to close
+let pvY0=null, pvDy=0;
+pvSh.addEventListener("touchstart", e=>{ const b=$("#pvBody"); if(e.target.closest("#pvBody") && b.scrollTop>0) { pvY0=null; return; } pvY0=e.touches[0].clientY; pvDy=0; pvSh.classList.add("drag"); }, {passive:true});
+pvSh.addEventListener("touchmove", e=>{ if(pvY0==null) return; pvDy=Math.max(0, e.touches[0].clientY-pvY0); pvSh.style.transform=`translateY(${pvDy}px)`; }, {passive:true});
+pvSh.addEventListener("touchend", ()=>{ if(pvY0==null) return; pvSh.classList.remove("drag"); pvY0=null; if(pvDy>70) setActive(null,false); else pvSh.style.transform=""; });
+
+function pvApply(){
+  const g = $("#stage"); ["mix","gemara","explain"].forEach(v=>g.classList.toggle("pv-"+v, PV.view===v && pvOnSlide()));
+  document.querySelectorAll("#pvBar .pvseg button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.v===PV.view));
+  const taps = !!document.querySelector("#cols .gtext [data-n], #cols .geo .gp[data-n]");   // intro slides: nothing to tap
+  const c = $("#pvSheetBtn"); if(c){ c.setAttribute("aria-pressed", PV.sheet); c.hidden = PV.view==="explain" || !taps; }
+  const hn = $("#pvHint"); if(hn) hn.hidden = !pvSheetOn() || !taps;
+  const b = $("#pvBar"); if(b) pvRoot.style.setProperty("--pvBarH", b.offsetHeight+"px");
+}
+function wirePV(){
+  const cols = $("#cols"); if(!cols || !$("#pvBar")) return;
+  document.querySelectorAll("#pvBar .pvseg button").forEach(b=>b.onclick=()=>{
+    if(PV.view===b.dataset.v) return; PV.view=b.dataset.v; store.set("pv:view",PV.view); pvApply(); pvSync();
+    const pb=$("#pvBar"), y = cols.getBoundingClientRect().top + scrollY - pvHdr.offsetHeight - pb.offsetHeight - 12;
+    if(scrollY > y) scrollTo({top:y});
+  });
+  $("#pvSheetBtn").onclick = () => { PV.sheet=!PV.sheet; store.set("pv:sheet",PV.sheet); pvApply(); pvSync(); };
+  pvApply();
+}
+const pvOnMq = () => { if(pvOnSlide()){ pvApply(); pvSync(); } };
+[pvMqPhone, pvMqMid].forEach(m=>{ try{ m.addEventListener("change", pvOnMq); }catch(e){ m.addListener(pvOnMq); } });
 // Per-slide feedback: prefilled Telegram message to the bot, with a copy fallback.
 const NOTE_BOT = "yehudaroth_bot", NOTE_TAGS = ["לא ברור","ארוך מדי","טעות","חסר הסבר","אחר"];
 const IN_FRAME = (()=>{ try{ return window.self!==window.top; }catch(e){ return true; } })();
@@ -908,6 +1066,7 @@ function renderProgress(){
   $("#progress").querySelectorAll("button").forEach((b,k)=>b.onclick=()=>go(k-1));
 }
 function render(){
+  pvReset();
   st.active=null; st.locked=false;
   if(st.i<0) renderMap(); else if(st.i<N) renderSlide(); else renderSummary();
   renderProgress();
@@ -919,7 +1078,6 @@ function render(){
   if(lesson){ const tot=buildSeq(S[st.i]).length; $("#step").disabled = st.step>=tot; $("#step").textContent = st.step>=tot ? "הכל נחשף" : `הצעד הבא (${st.step}/${tot})`; }
   $("#keys").textContent = lesson ? "רווח: הצעד הבא · חיצים: מעבר שקף" : "חיצים למעבר · לחיצה על צומת מדגישה את הטקסט";
   $("#mStudy").setAttribute("aria-pressed",st.mode==="study"); $("#mLesson").setAttribute("aria-pressed",st.mode==="lesson");
-  $("#tExplain").setAttribute("aria-pressed",st.explain);
 }
 function go(k){ st.i=Math.max(-1,Math.min(N,k)); st.step=0; render(); window.scrollTo({top:0}); }
 function stepFwd(){ if(st.mode!=="lesson"||st.i>=N||st.i<0){ go(st.i+1); return; }
@@ -930,7 +1088,6 @@ $("#next").onclick=()=>go(st.i+1);
 $("#step").onclick=stepFwd;
 $("#mStudy").onclick=()=>{ st.mode="study"; store.set("mode","study"); render(); };
 $("#mLesson").onclick=()=>{ st.mode="lesson"; st.step=0; store.set("mode","lesson"); render(); };
-$("#tExplain").onclick=()=>{ st.explain=!st.explain; store.set("explain",st.explain); render(); };
 document.addEventListener("keydown",e=>{
   if(e.target.closest("textarea,input")) return;
   if(e.key==="ArrowLeft"){ e.preventDefault(); go(st.i+1); }
